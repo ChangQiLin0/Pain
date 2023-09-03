@@ -13,11 +13,11 @@ public class Enemy : MonoBehaviour
     public float bulletSpeed;
     public float enemySpeed;
 
-    public float bulletCount;
     public float fireRate;
     public float lookRadius;
     public float attackRadius;
     public float bulletSpreadAngle;
+    // shotgun only
     public LayerMask whatIsPlayer;
     private Transform target;
     private Rigidbody2D rb;
@@ -56,15 +56,7 @@ public class Enemy : MonoBehaviour
         }
         // stops enemy from drifting
         rb.velocity = Vector2.zero;
-        // gets playerstats inorder to be able to call TakeDamage function
-        PlayerStats playerStats = collision.gameObject.GetComponent<PlayerStats>();
-
-        if (playerStats != null)
-        {
-            playerStats.TakeDamage(enemyDamage);
-        }
-
-        
+        // gets playerstats inorder to be able to call TakeDamage function       
     }
 
     void FixedUpdate()

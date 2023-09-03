@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 4794944907271097335}
   - component: {fileID: 4794944907271097332}
+  - component: {fileID: 4794944907271097336}
+  - component: {fileID: 8324097270657117883}
   - component: {fileID: 4794944907271097333}
   - component: {fileID: 4794944907271097337}
-  - component: {fileID: 8324097270657117883}
   - component: {fileID: 4794944907271097334}
-  - component: {fileID: 4794944907271097336}
   m_Layer: 9
   m_Name: BulletKin
   m_TagString: Enemy
@@ -90,6 +90,49 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4794944907271097336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4794944907271097330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c7e1bab743bf8143bd51cfaee952502, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  barrel: {fileID: 4794944908278854645}
+  bulletPrefab: {fileID: 5140972132431793544, guid: 77820da56013a0a4e8d70b7329b9cfd5,
+    type: 3}
+  health: 100
+  enemyDamage: 10
+  bulletSpeed: 4
+  enemySpeed: 3
+  fireRate: 1
+  lookRadius: 10
+  attackRadius: 7
+  bulletSpreadAngle: 10
+  whatIsPlayer:
+    serializedVersion: 2
+    m_Bits: 64
+  dir: {x: 0, y: 0, z: 0}
+  hasShotgun: 0
+--- !u!114 &8324097270657117883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4794944907271097330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eec11368ea4c25e418afad1dc5299cb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  itemPrefab: {fileID: 4385003979178922013, guid: 033a630f213a5aa4082efb23d79ca6da,
+    type: 3}
+  lootList: []
 --- !u!95 &4794944907271097333
 Animator:
   serializedVersion: 4
@@ -131,21 +174,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &8324097270657117883
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4794944907271097330}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eec11368ea4c25e418afad1dc5299cb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemPrefab: {fileID: 4385003979178922013, guid: 033a630f213a5aa4082efb23d79ca6da,
-    type: 3}
-  lootList: []
 --- !u!61 &4794944907271097334
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -172,35 +200,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.75283194, y: 1.4375}
   m_EdgeRadius: 0
---- !u!114 &4794944907271097336
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4794944907271097330}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c7e1bab743bf8143bd51cfaee952502, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  barrel: {fileID: 4794944908278854645}
-  bulletPrefab: {fileID: 5140972132431793544, guid: 77820da56013a0a4e8d70b7329b9cfd5,
-    type: 3}
-  health: 100
-  enemyDamage: 5
-  bulletSpeed: 4
-  enemySpeed: 3
-  bulletCount: 10
-  fireRate: 1
-  lookRadius: 10
-  attackRadius: 7
-  bulletSpreadAngle: 10
-  whatIsPlayer:
-    serializedVersion: 2
-    m_Bits: 64
-  dir: {x: 0, y: 0, z: 0}
-  hasShotgun: 0
 --- !u!1 &4794944908278854642
 GameObject:
   m_ObjectHideFlags: 0

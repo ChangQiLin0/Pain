@@ -8,7 +8,7 @@ public class EnemyBullet : MonoBehaviour
     public Rigidbody2D rb;
     public GameObject enemy;
     private float bulletSpeed2;
-    private float damage;
+    public float damage;
     
 
     void Start()
@@ -30,18 +30,6 @@ public class EnemyBullet : MonoBehaviour
 
     private void OnCollisionEnter2D (Collision2D collision)
     {
-        // checks if collision object has an enemy component so it can take damage
-        PlayerStats player = collision.gameObject.GetComponent<PlayerStats>();
-        // if enemy component exists 
-        if (player != null)
-        {
-            // damage taken can be changed in component - defaulted to 10
-            player.TakeDamage(damage);
-        }
-
-
         Destroy(gameObject);
-    
-        
     }
 }
