@@ -20,6 +20,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        //find out?
+        rb.velocity = Vector2.zero;
         HandleInputs();
         Animation();
     }
@@ -30,15 +32,24 @@ public class PlayerMovement : MonoBehaviour
         moveVector.x = Input.GetAxisRaw("Horizontal");
         moveVector.y = Input.GetAxisRaw("Vertical");
 
-        // gets direction of where the cursor is
+        // Follow cursor
         Vector2 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
 
-        // checks for what direction the cursor is to check if flip on y axis for sprites is required
-        // TEMP - dir -> moveVector
+        // checks for what direction the movement is to check if flip on y axis for sprites is required
+        // Change moveVector to dir to follow cursor
+        
+        if (dir.x > 0 && !facingRight || dir.x < 0 && facingRight)
+        {
+            Flip();
+        }
+        
+
+        /*
         if (moveVector.x > 0 && !facingRight || moveVector.x < 0 && facingRight)
         {
             Flip();
         }
+        */
 
     }
 
