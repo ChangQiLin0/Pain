@@ -23,81 +23,71 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 movement;
     public Vector3 dir;
-
-    private bool inLookRange;
-    private bool inAttackRange = true;
     private float fireTimer;
     public bool hasShotgun;
     private bool attackPlayer;
+    private bool isMoving;
 
 
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        // sets the player as the target
-        target = GameObject.FindWithTag("Player").transform;
+        target = GameObject.FindWithTag("Player").transform; // sets the player as the target
 
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        // checks if collision object is a player by check tags
+        if (collision.gameObject.CompareTag("Bullet")) // seperate if statements do not combine
         {
-            // stops enemy from drifting when touched by the player
-            rb.velocity = Vector2.zero;
+            lookRadius = 1000; // sets look radius to infinite
         }
-
-        if (collision.gameObject.CompareTag("Bullet"))
-        {
-            lookRadius = 1000;
-            attackRadius += 0;
-        }
-        // stops enemy from drifting
-        rb.velocity = Vector2.zero;
-        // gets playerstats inorder to be able to call TakeDamage function       
     }
 
     void FixedUpdate()
     {
-        fireTimer += Time.fixedDeltaTime;
-        
-        if (fireTimer >= fireRate && attackPlayer)
-        {
-            if (hasShotgun)
-                // creates 3 bullets one in centre and 2 off axis
-                {
+        rb.velocity = Vector2.zero; // prevents enemies from drifting when collided 
 
-                GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation);
-                Rigidbody2D rb1 = bullet.GetComponent<Rigidbody2D>();
-                GameObject leftBullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * (Quaternion.Euler(0f, 0f, -30f)));
-                Rigidbody2D rb2 = leftBullet.GetComponent<Rigidbody2D>();
-                GameObject rightBullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation* (Quaternion.Euler(0f, 0f, 30f)));
-                Rigidbody2D rb3 = rightBullet.GetComponent<Rigidbody2D>();
-                
+        fireTimer += Time.fixedDeltaTime; 
+        if (fireTimer >= fireRate && attackPlayer && !isMoving)
+        {
+            if (hasShotgun) // boolean - checks if is it a shotgunner
+                {
+                for (float i = -30; i < 31; i+=30) // i = -30, 0 and 30
+                    {
+                    // create bullet at barrel with rotation i
+                    GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * (Quaternion.Euler(0f, 0f, i)));
+                    
+                    // get bullet component to sets damage and speed
+                    bullet.GetComponent<EnemyBullet>().damage = enemyDamage;
+                    bullet.GetComponent<EnemyBullet>().bulletSpeed = bulletSpeed;
+                    }
                 }
             else
             {
-                // creates a bullet at the position of the barrel 
-                GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation);
-                Rigidbody2D rb4 = bullet.GetComponent<Rigidbody2D>();
+                
+                GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation); // creates a bullet at the position of the barrel 
+                bullet.GetComponent<EnemyBullet>().damage = enemyDamage;
+                bullet.GetComponent<EnemyBullet>().bulletSpeed = bulletSpeed;
             }
 
-            fireTimer = 0f;
+            fireTimer = 0f; // set timer back to 0
         }
     }
 
     private void Update()
     {
-        // creates a circle at centre with radius of look/attack and if player is in radius 
-        inLookRange = Physics2D.OverlapCircle(transform.position, lookRadius, whatIsPlayer);
-        inAttackRange = Physics2D.OverlapCircle(transform.position, attackRadius, whatIsPlayer);
+        EnemyMovement();
+        EnemyAiming();
+    }
+    private void EnemyMovement()
+    {
+        isMoving = !rb.IsSleeping(); // IsSleeping checks if rb is at 0
+        float distance = Vector2.Distance(transform.position, target.position); // calculated distance from player to enemy
 
-        float distance = Vector2.Distance(transform.position, target.position);
-
-        // checks if player is in range so it can move
-        if (distance <= lookRadius && distance >= attackRadius)
+        
+        if (distance <= lookRadius && distance >= attackRadius) // checks if player is in lookrange
         {
             // if in range get direction of player then normlize to prevent excess speed
             Vector2 dir = target.position - transform.position;
@@ -106,14 +96,14 @@ public class Enemy : MonoBehaviour
             transform.Translate(dir * enemySpeed * Time.deltaTime);
             attackPlayer = true;
         }
-        else
+        else if (distance <= attackRadius)
         {
-            // prevents drifting of enemy
-            rb.velocity = Vector2.zero;
+            attackPlayer = true;
         }
+        
         // creates a circle with half radius of look 
         // check if enemy is in area and has been attack
-        Collider2D[] surroundingEnemys = Physics2D.OverlapCircleAll(transform.position, (lookRadius/2), LayerMask.GetMask("Enemy"));
+        Collider2D[] surroundingEnemys = Physics2D.OverlapCircleAll(transform.position, lookRadius/2, LayerMask.GetMask("Enemy"));
         // checks all items in list and runs the following code
         foreach (Collider2D surroundingEnemy in surroundingEnemys)
         {
@@ -129,30 +119,46 @@ public class Enemy : MonoBehaviour
                 }
             }
         }
-        
-        
     }
 
-
-
-    public void TakeDamage(int damage)
+    void EnemyAiming() // handle enemy aiming
     {
-        // subtracts health by damage
-        health -= damage;
+        Transform gunHolder = transform.Find("EnemyWeaponHolder");
+        // similar code from GunAim.cs
+        Vector2 dir = target.position - gunHolder.position; // get direction of player 
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // calculates angle and converts to degrees using mathf.rad2deg
+        gunHolder.eulerAngles = new Vector3(0, 0, angle); // apply angle to object
+        
+        // flip gun when past y axis
+
+        Vector3 localScale = Vector3.one;
+
+        if (angle > 89 || angle < -89)
+        {
+            localScale.y = -1f;
+        }
+        else
+        {
+            localScale.y = 1f;
+        }
+        // flips based on localScale
+        gunHolder.localScale = localScale; // apply flip to object
+
+    }
+
+    public void TakeDamage(float damage)
+    {
+        health -= damage; // subtracts health by damage
         // checks if health is below 0
         if (health <= 0)
         {
-            // if below zero die
-            Die();
+            Die(); // if below zero die
         }
     }
     public void Die()
     {
-        // when enemy dead check loottable and drop loot if lucky
-        GetComponent<LootTable>().InstantiateLoot(transform.position);
-
-        // destroys gameobject which enemy when health <= 0
-        Destroy(gameObject);
+        GetComponent<LootTable>().InstantiateLoot(transform.position); // check if enemy is lootable/has LootTable script
+        Destroy(gameObject); // remove enemy from existence
     }
 
 

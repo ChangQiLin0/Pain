@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu]
-public class Loot : ScriptableObject
+public class Loot : MonoBehaviour // apply to object and make prefab
 {
-    public Sprite lootSprite;
+    // holds all info about item
+    public GameObject lootObject;
     public string lootName;
     public float dropChance;
-    // 0-100 
-
-    public Loot(string lootName, float dropChance)
-    {
-        this.lootName = lootName;
-        this.dropChance = dropChance;
-    }
+    public string itemDescription; // mainly used in UI
+    
 }

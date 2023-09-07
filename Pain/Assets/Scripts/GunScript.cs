@@ -1,120 +1,124 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class GunScript : MonoBehaviour
 {
-    // serializefield allows private objects to be viewed in unity editor
-    [SerializeField] private Transform barrel;
-    [SerializeField] private float fireRate;
-    // lower firerate = faster
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private GameObject player;
+    public Transform barrel;
+    public GameObject bulletPrefab;
+    public GameObject player;
 
-    public float baseBulletSpread = 10f;
-    private float totalSpread;
-    public float baseReloadTime = 0.5f;
-    private float reloadTimer;
-    
-    private float fireTimer;
-    private float curReloadTime;
-    private bool isReloading;
-    private int totalAmmo;
-    public int maxAmmo;
-    public int curAmmo;
-    // set to private when not testing
+    private float totalBulletSpread; // max 45
+    public float baseBulletSpread;
+    private float playerBulletSpread;
+
+    public float totalDamage; // total damage (base+playerbonus) * multi, public - accessed by enemy 
+    public float baseDamage; // default damage of gun
+    private float playerDamage; // any damage bonus/stat increase to player
+    private float playerDamageMulti; // same as ^. Can be lower than 1 but not 0
+
+    private float totalAmmo; // total ammo player has (base+playerbonus)
+    public float baseAmmo; // default ammo of gun
+    private float playerAmmo; // bonus ammo by player stat
+    private float curAmmo; // current ammo remaining 
+
+    public float baseFireRate; // lower firerate = faster
+    private float fireRateTimer; // timer for shooting
+
+    public float baseReloadSpeed; // reload speed of gun itself - no additional bonuses
+    private float curReloadTimer; // current cooldown timer for reloading
+
+    private bool isReloading; // boolean condition for if gun is reloading
 
 
     void Start()
     {
-        curAmmo = maxAmmo;
-        GetValues();
-    }
-    
-    void Update()
-    {
-        GetValues();
-    }
-    void GetValues()
-    {
-        if (player != null)
-        {
-            // gets additional bullet spread 
-            float addBulletSpread = player.GetComponent<PlayerStats>().bulletSpreadAngle;
-            totalSpread = baseBulletSpread + addBulletSpread;
-
-            reloadTimer = player.GetComponent<PlayerStats>().reloadSpeed;
-
-            int ammoBonus = player.GetComponent<PlayerStats>().bonusAmmo;
-            totalAmmo = maxAmmo + ammoBonus;
-            
-        }
+        playerAmmo = player.GetComponent<Player>().bonusAmmo; // needs to be called to set initial max ammo
+        totalAmmo = baseAmmo + playerAmmo;
+        curAmmo = totalAmmo;
     }
 
     void FixedUpdate()
     {
-        DetectShooting();     
+        GetValues();
+        DetectShooting(); // call both functions
         Reloading();
+        Aiming();
+        
+    }
+    void GetValues()
+    {
+        totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
+        totalDamage = (baseDamage + playerDamage) * playerDamageMulti; // same but damage
+
+        playerBulletSpread = player.GetComponent<Player>().bulletSpreadAngle; // get values from playerstat script
+        playerDamage = player.GetComponent<Player>().bonusDamage;
+        playerDamageMulti = player.GetComponent<Player>().damageMultiplier;
     }
 
-    private void Reloading()
+    void DetectShooting()
     {
-        if (curAmmo <= 0 || (Input.GetKeyDown(KeyCode.R)))
+        if (Input.GetMouseButton(0) && (Time.time > fireRateTimer) && !isReloading) // reads mouse input for left lick (0)
         {
-            Debug.Log("RELOADING");
-            isReloading = true;
-            curAmmo = totalAmmo;
+            if (totalBulletSpread > 45)
+            {
+                totalBulletSpread = 45; // max bullet spread is 45
+            }
+            else if (totalBulletSpread < 0)
+            {
+                totalBulletSpread = 0; // cannot go below 0
+            }
+            // random number generator
+            float randomFloat = Random.Range(-totalBulletSpread, totalBulletSpread); // randomise spread in both directions
+            // creates the set rotation as bulletRotation
+            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, randomFloat); // creates bullet with random spread
+            // creates a bullet at the position of the barrel with applied rotation
+            GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * bulletRotation); // creates bullet object
+            bullet.GetComponent<BulletScript>().gunDamage = totalDamage; // fetch component to set value
+            
+            curAmmo -= 1; // subtract bullet count
+            fireRateTimer = Time.time + baseFireRate; // increment time
+        }
+    }
+
+    void Reloading()
+    {
+        if (curAmmo <= 0 || Input.GetKeyDown(KeyCode.R)) // check if reload conditions are met
+        {
+            
+            isReloading = true; // set reload to true so player cant shoot
+            curAmmo = totalAmmo; // set ammo to max
         }
 
         if (isReloading)
         {
-            curReloadTime += Time.fixedDeltaTime;
-            if (curReloadTime >= reloadTimer)
+            if (curReloadTimer >= baseReloadSpeed) // if time passed is greater than reload time
             {
-                isReloading = false;
-                curReloadTime = 0f;
+                isReloading = false; // no longer reloading
+                curReloadTimer = 0f; // reset timer
             }
+            curReloadTimer += Time.fixedDeltaTime; // add time 
         }
     }
 
-
-    private void DetectShooting()
+    void Aiming()
     {
-        // reads mouse input for left lick (0)
-        // change to GetMouseButtonDown for no auto guns
-        if (Input.GetMouseButton(0) && (Time.time > fireTimer) && !isReloading)
+        Vector2 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position); // find direction of mouse 
+        var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // calculates angle and converts to degrees using mathf.rad2deg
+        transform.eulerAngles = new Vector3(0, 0, angle); 
+
+        Vector3 localScale = Vector3.one;
+
+        if (angle > 89 || angle < -89) // 89 prevents collision/interference with flip/over the top flipping
         {
-            Shoot();
+            localScale.y = -1f;
         }
+        else
+        {
+            localScale.y = 1f;
+        }
+        transform.localScale = localScale; // finalises the flip
 
     }
-
-    private void Shoot()
-    {
-        fireTimer = Time.time + fireRate;
-        // barrel rotation modifier to spread
-        if (totalSpread > 45)
-        {
-            // max bullet spread is 45
-            totalSpread = 45;
-        }
-        else if (totalSpread < 0)
-        {
-            // cannot go below 0
-            totalSpread = 0;
-        }
-        // random number generator
-        float randomFloat = Random.Range(-totalSpread, totalSpread);
-        // creates the set rotation as bulletRotation
-        Quaternion bulletRotation = Quaternion.Euler(0f, 0f, randomFloat);
-        // creates a bullet at the position of the barrel with applied rotation
-        GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * bulletRotation);
-        curAmmo -= 1;
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-            
-    }
-
-
 }
-
-
