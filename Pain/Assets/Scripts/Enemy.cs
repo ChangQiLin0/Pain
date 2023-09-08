@@ -17,8 +17,12 @@ public class Enemy : MonoBehaviour
     public float lookRadius;
     public float attackRadius;
     public float bulletSpreadAngle;
+    // shotgun only
+    public LayerMask whatIsPlayer;
     private Transform target;
     private Rigidbody2D rb;
+    private Vector2 movement;
+    public Vector3 dir;
     private float fireTimer;
     public bool hasShotgun;
     private bool attackPlayer;
@@ -53,7 +57,7 @@ public class Enemy : MonoBehaviour
                 for (float i = -30; i < 31; i+=30) // i = -30, 0 and 30
                     {
                     // create bullet at barrel with rotation i
-                    GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * Quaternion.Euler(0f, 0f, i));
+                    GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * (Quaternion.Euler(0f, 0f, i)));
                     
                     // get bullet component to sets damage and speed
                     bullet.GetComponent<EnemyBullet>().damage = enemyDamage;

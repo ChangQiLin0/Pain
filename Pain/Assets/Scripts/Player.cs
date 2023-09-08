@@ -1,15 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Contexts;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator playerAnimation;
     private bool facingRight = true;
-    public Vector2 moveVector; // store player movement vector 
+    private Vector2 moveVector; // store player movement input e.g. WASD
     public float totalMoveSpeed; // additional will be done later
     public float maxHealth = 200;
     public float curHealth = 200;
@@ -21,8 +19,8 @@ public class Player : MonoBehaviour
     public int bonusAmmo; // bonus ammo for player
     public float defence; // higher = better
     public float defenceMultiplier = 1; // lower = better
-    
-    private Vector3 mousePos;
+   
+
     
     private void Start()
     {
@@ -33,28 +31,25 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        HandleInputs();
         Animation();
-        MovePlayer();
     }
 
-    public void OnMove(InputAction.CallbackContext context) // public as it needs to be found in menu
+    private void HandleInputs()
     {
-        moveVector = context.ReadValue<Vector2>(); // get input from player as vector2 
-    }
+        // gets horizontal and vertical inputs e.g. wasd or arrow keys
+        moveVector.x = Input.GetAxisRaw("Horizontal");
+        moveVector.y = Input.GetAxisRaw("Vertical");
 
-    public void OnMousePos(InputAction.CallbackContext context)
-    {
-        mousePos = context.ReadValue<Vector2>(); // can only be vector2 not 3
-    }
-
-    private void MovePlayer() // seperate method to be called in fixedupdate
-    {
-        Vector2 mouseDir = mousePos - Camera.main.WorldToScreenPoint(transform.position); // get mouse direction
+        // Follow cursor
+        Vector2 mouseDir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
 
         // checks for what direction the movement is to check if flip on y axis for sprites is required
+        // Change moveVector to dir to follow cursor
+        
         if (mouseDir.x > 0 && !facingRight || mouseDir.x < 0 && facingRight)
         {
-            facingRight = !facingRight; // notify that it is facing left 
+            facingRight = !facingRight;
             transform.Rotate(0f, 180f, 0f); // flips/mirrors sprites on the y axis
         }
         rb.velocity = moveVector.normalized * totalMoveSpeed; // apply movement to player
@@ -93,5 +88,26 @@ public class Player : MonoBehaviour
                 TakeDamage(totalDealtDamage); // calls takedamage function with damage as parameter 
             }
         }
+
     }        
+    public void OnEnable() // replace with on collision check
+    {
+        //CollectCoin.OnCoinCollected += CollectedCoin; // subscribe to event and calls CollectedCoin function
+    }
+
+    private void CollectedCoin()
+    {
+        int randomValue =Random.Range(1,6); // creates random coin increase value 1-5 inc
+        int randomCoin = Mathf.RoundToInt(randomValue * coinMultiplier); // multiply by multiplier 
+        totalCoins += randomCoin; // add to player overall coin stats to be displayed
+    }
+    
+        
+            
+        
+
+
+    
+
+
 }
