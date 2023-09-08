@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Callbacks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class GunScript : MonoBehaviour
 {
@@ -30,7 +31,8 @@ public class GunScript : MonoBehaviour
     private float curReloadTimer; // current cooldown timer for reloading
 
     private bool isReloading; // boolean condition for if gun is reloading
-
+    private Vector3 mousePos;
+    private bool contextReload;
 
     void Start()
     {
@@ -47,6 +49,17 @@ public class GunScript : MonoBehaviour
         Aiming();
         
     }
+    public void OnMousePos(InputAction.CallbackContext context)
+    {
+        mousePos = context.ReadValue<Vector2>();
+    }
+    public void OnReload(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            contextReload = true;
+        }
+    }
     void GetValues()
     {
         totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
@@ -59,7 +72,7 @@ public class GunScript : MonoBehaviour
 
     void DetectShooting()
     {
-        if (Input.GetMouseButton(0) && (Time.time > fireRateTimer) && !isReloading) // reads mouse input for left lick (0)
+        if (Mouse.current.leftButton.isPressed && (Time.time > fireRateTimer) && !isReloading) // reads mouse input for left click (0)
         {
             if (totalBulletSpread > 45)
             {
@@ -69,12 +82,9 @@ public class GunScript : MonoBehaviour
             {
                 totalBulletSpread = 0; // cannot go below 0
             }
-            // random number generator
-            float randomFloat = Random.Range(-totalBulletSpread, totalBulletSpread); // randomise spread in both directions
-            // creates the set rotation as bulletRotation
-            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, randomFloat); // creates bullet with random spread
-            // creates a bullet at the position of the barrel with applied rotation
-            GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * bulletRotation); // creates bullet object
+            float randomFloat = Random.Range(-totalBulletSpread, totalBulletSpread); // randomise spread
+            Quaternion bulletRotation = Quaternion.Euler(0f, 0f, randomFloat); // creates bullet with random rotation
+            GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * bulletRotation);
             bullet.GetComponent<BulletScript>().gunDamage = totalDamage; // fetch component to set value
             
             curAmmo -= 1; // subtract bullet count
@@ -83,10 +93,9 @@ public class GunScript : MonoBehaviour
     }
 
     void Reloading()
-    {
-        if (curAmmo <= 0 || Input.GetKeyDown(KeyCode.R)) // check if reload conditions are met
+    {         
+        if (curAmmo <= 0 || contextReload) // check if reload conditions are met
         {
-            
             isReloading = true; // set reload to true so player cant shoot
             curAmmo = totalAmmo; // set ammo to max
         }
@@ -96,6 +105,7 @@ public class GunScript : MonoBehaviour
             if (curReloadTimer >= baseReloadSpeed) // if time passed is greater than reload time
             {
                 isReloading = false; // no longer reloading
+                contextReload = false;
                 curReloadTimer = 0f; // reset timer
             }
             curReloadTimer += Time.fixedDeltaTime; // add time 
@@ -104,7 +114,7 @@ public class GunScript : MonoBehaviour
 
     void Aiming()
     {
-        Vector2 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position); // find direction of mouse 
+        Vector2 dir = mousePos - Camera.main.WorldToScreenPoint(transform.position); // find direction of mouse 
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // calculates angle and converts to degrees using mathf.rad2deg
         transform.eulerAngles = new Vector3(0, 0, angle); 
 
