@@ -11,22 +11,31 @@ public class Player : MonoBehaviour
     public float totalMoveSpeed; // additional will be done later
     public float maxHealth = 200;
     public float curHealth = 200;
-    public int totalCoins = 0;
+    public float totalCoins = 0;
     public float coinMultiplier = 1; 
+    public float playerLevel; // temp
+    public float totalExp; // temp
+    public float expMultiplier; // temp
     public float bonusDamage;
     public float damageMultiplier = 1; // higher is better default = 1 but can be > 0
     public float bulletSpreadAngle; // DEGREES
     public int bonusAmmo; // bonus ammo for player
     public float defence; // higher = better
     public float defenceMultiplier = 1; // lower = better
-   
+    private PlayerInventory playerInventory;
+    public GameUI gameUI;
+    private GameObject collidedLoot;
 
-    
+     
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // get component from player
         playerAnimation = GetComponent<Animator>(); // get animation
-        curHealth = maxHealth; // initiates the player character 
+        curHealth = maxHealth; // initiates the player character
+
+        playerInventory = GetComponent<PlayerInventory>(); // create new inventory instance
+        Debug.Log("jkdbsafh");
+        gameUI.SetInventory(playerInventory); // pass playerinventory into ui script
     }
 
     private void FixedUpdate()
@@ -88,26 +97,22 @@ public class Player : MonoBehaviour
                 TakeDamage(totalDealtDamage); // calls takedamage function with damage as parameter 
             }
         }
-
-    }        
-    public void OnEnable() // replace with on collision check
-    {
-        //CollectCoin.OnCoinCollected += CollectedCoin; // subscribe to event and calls CollectedCoin function
     }
 
-    private void CollectedCoin()
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        int randomValue =Random.Range(1,6); // creates random coin increase value 1-5 inc
-        int randomCoin = Mathf.RoundToInt(randomValue * coinMultiplier); // multiply by multiplier 
-        totalCoins += randomCoin; // add to player overall coin stats to be displayed
+        if (collider.CompareTag("Item"))
+        {
+            collidedLoot = collider.gameObject;
+        }
     }
-    
+
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if (collider.gameObject == collidedLoot)
+        {
+            collidedLoot = collider.gameObject;
+        }
         
-            
-        
-
-
-    
-
-
+    }
 }

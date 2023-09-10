@@ -7,7 +7,8 @@ public class GunScript : MonoBehaviour
 {
     public Transform barrel;
     public GameObject bulletPrefab;
-    public GameObject player;
+    public GameObject gunObject;
+    private GameObject player;
 
     private float totalBulletSpread; // max 45
     public float baseBulletSpread;
@@ -31,9 +32,12 @@ public class GunScript : MonoBehaviour
 
     private bool isReloading; // boolean condition for if gun is reloading
 
+    public bool isSelected; // should never be true by default unless its the first gun
+
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
         playerAmmo = player.GetComponent<Player>().bonusAmmo; // needs to be called to set initial max ammo
         totalAmmo = baseAmmo + playerAmmo;
         curAmmo = totalAmmo;
@@ -42,10 +46,16 @@ public class GunScript : MonoBehaviour
     void FixedUpdate()
     {
         GetValues();
-        DetectShooting(); // call both functions
-        Reloading();
-        Aiming();
-        
+        if (gameObject.CompareTag("Item"))
+        {
+            gunObject.GetComponent<SpriteRenderer>().sortingOrder = 4; // subtract 1 from sorting layer so it always shows under the player 
+        }
+        if (isSelected)
+        {
+            DetectShooting(); 
+            Reloading();
+            Aiming();
+        }
     }
     void GetValues()
     {

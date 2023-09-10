@@ -83,7 +83,6 @@ public class Enemy : MonoBehaviour
     }
     private void EnemyMovement()
     {
-        isMoving = !rb.IsSleeping(); // IsSleeping checks if rb is at 0
         float distance = Vector2.Distance(transform.position, target.position); // calculated distance from player to enemy
 
         
@@ -94,10 +93,12 @@ public class Enemy : MonoBehaviour
             dir.Normalize();
             // moves enemy towards player 
             transform.Translate(dir * enemySpeed * Time.deltaTime);
+            isMoving = true;
             attackPlayer = true;
         }
         else if (distance <= attackRadius)
         {
+            isMoving = false;
             attackPlayer = true;
         }
         
@@ -157,7 +158,7 @@ public class Enemy : MonoBehaviour
     }
     public void Die()
     {
-        GetComponent<LootTable>().InstantiateLoot(transform.position); // check if enemy is lootable/has LootTable script
+        GetComponent<LootTable>().GetDroppedLoot(); // check if enemy is lootable/has LootTable script
         Destroy(gameObject); // remove enemy from existence
     }
 

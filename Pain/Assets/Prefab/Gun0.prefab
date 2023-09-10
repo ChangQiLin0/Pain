@@ -125,9 +125,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1001094837229124376}
   - component: {fileID: 4115047150837525449}
+  - component: {fileID: 8705719859059006266}
   m_Layer: 6
   m_Name: Gun0
-  m_TagString: Untagged
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -164,10 +165,37 @@ MonoBehaviour:
   barrel: {fileID: 152129700952988138}
   bulletPrefab: {fileID: 2668560531136582322, guid: 8d795cf45a93149439a460c5284b9fa0,
     type: 3}
-  player: {fileID: 0}
+  gunObject: {fileID: 152129701473355366}
   baseBulletSpread: 10
-  baseDamage: 10
+  totalDamage: 0
+  baseDamage: 1.85
   baseAmmo: 15
-  curAmmo: 0
   baseFireRate: 0.1
   baseReloadSpeed: 0.5
+  isSelected: 0
+--- !u!61 &8705719859059006266
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001094837229124377}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0

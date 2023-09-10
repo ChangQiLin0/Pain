@@ -79,8 +79,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lootList:
-  - {fileID: 4879502087507413388, guid: c2bbc6688be8aa7499c74944acc8b426, type: 3}
-  - {fileID: 4879502087507413388, guid: c2bbc6688be8aa7499c74944acc8b426, type: 3}
+  - Coin
+  - gun0
+  gun0: {fileID: 1001094837229124377, guid: f263fb0e219cbd14ab84443779fcb473, type: 3}
 --- !u!212 &4794944907271097332
 SpriteRenderer:
   m_ObjectHideFlags: 0
