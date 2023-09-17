@@ -1,48 +1,57 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameUI : MonoBehaviour
 {
     private PlayerInventory playerInventory;
-    private Transform itemContainer;
-    private Transform itemTemplate;
-    public Sprite sprite;
+    private Transform invParent;
 
     public void SetInventory(PlayerInventory playerInventory)
     {
         this.playerInventory = playerInventory;
-        RefreshInv();
     }
-
-    private void Awake()
+    public void Awake()
     {
-        itemContainer = transform.Find("SlotContainer");
-        //itemTemplate = itemContainer.Find("itemTemplate");
+        invParent = transform.Find("Inventory"); // gets inventory main parent
     }
 
-    private void RefreshInv()
+    public void UpdateAddInv(GameObject objectToAdd)
     {   
-        Debug.Log(playerInventory.lootList.Count);
-        int x = 0;
-        int y = 0;
-        float cellSize = 100f;
-        foreach (GameObject loot in playerInventory.lootList)
+        bool foundEmpty = false; // makes sures that every time this is ran always start at false
+        int i = 0; // always set index back to 0 time method is called
+        while (!foundEmpty && i < 24) // when not found or not end of list keep running 
         {
-            Debug.Log("eeeeeeaaaa");
-            //RectTransform itemRectTransform =
-            Instantiate(sprite, itemContainer);//.GetComponent<RectTransform>();
-            //itemRectTransform.gameObject.SetActive(true);
-            //itemRectTransform.anchoredPosition = new Vector2(x * cellSize, y * cellSize);
-            x++;
-            if (x > 4)
+            GridLayoutGroup gridLayoutGroup = invParent.GetComponent<GridLayoutGroup>(); // get layout grid 
+            Transform invLootChildSlot = gridLayoutGroup.transform.GetChild(i);
+            if (invLootChildSlot.childCount < 1) // if parent doesnt have a child
             {
-                x = 0;
-                y++;
+                Debug.Log("Working on inv add update"+ objectToAdd.TryGetComponent(out Image abc));
+                
+                if (!objectToAdd.TryGetComponent(out Image objectImage)) // attemps to get component
+                {
+                    if (objectImage == null)
+                    {
+                        objectImage = objectToAdd.AddComponent<Image>(); // add image component
+                    }
+                }
+                if (!objectToAdd.TryGetComponent(out SpriteRenderer objectSpriteRenderer)) // attemps to get component
+                {
+                    if (objectSpriteRenderer == null) // check if spriterender component is on parent object if not check child
+                    {
+                        objectSpriteRenderer = objectToAdd.GetComponentInChildren<SpriteRenderer>(); // get spriterender from children
+                    }
+                }
+                objectImage.preserveAspect = true; // make sure that objects arent stretched 
+                objectImage.sprite = objectSpriteRenderer.sprite; // set image sprite
+                RectTransform objectSlotInstantiate = Instantiate(objectToAdd.transform, invLootChildSlot).GetComponent<RectTransform>(); // instantiate object
+                objectSlotInstantiate.gameObject.SetActive(true); // allow object to be visible
+
+                foundEmpty = true; // stop while loop to as object has been insantiated
             }
+            i ++; // add one to counter 
         }
-        
     }
 }

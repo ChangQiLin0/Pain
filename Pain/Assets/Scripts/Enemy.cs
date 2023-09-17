@@ -21,7 +21,6 @@ public class Enemy : MonoBehaviour
     public LayerMask whatIsPlayer;
     private Transform target;
     private Rigidbody2D rb;
-    private Vector2 movement;
     public Vector3 dir;
     private float fireTimer;
     public bool hasShotgun;
@@ -53,17 +52,14 @@ public class Enemy : MonoBehaviour
         if (fireTimer >= fireRate && attackPlayer && !isMoving)
         {
             if (hasShotgun) // boolean - checks if is it a shotgunner
-                {
+            {
                 for (float i = -30; i < 31; i+=30) // i = -30, 0 and 30
                     {
-                    // create bullet at barrel with rotation i
-                    GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * (Quaternion.Euler(0f, 0f, i)));
-                    
-                    // get bullet component to sets damage and speed
-                    bullet.GetComponent<EnemyBullet>().damage = enemyDamage;
+                    GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * Quaternion.Euler(0f, 0f, i)); // create bullet at barrel with rotation i
+                    bullet.GetComponent<EnemyBullet>().damage = enemyDamage; // get bullet component to sets damage and speed
                     bullet.GetComponent<EnemyBullet>().bulletSpeed = bulletSpeed;
                     }
-                }
+            }
             else
             {
                 
@@ -72,7 +68,7 @@ public class Enemy : MonoBehaviour
                 bullet.GetComponent<EnemyBullet>().bulletSpeed = bulletSpeed;
             }
 
-            fireTimer = 0f; // set timer back to 0
+            fireTimer = 0f; // always set timer back to 0
         }
     }
 
@@ -86,55 +82,43 @@ public class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, target.position); // calculated distance from player to enemy
 
         
-        if (distance <= lookRadius && distance >= attackRadius) // checks if player is in lookrange
+        if (distance <= lookRadius && distance >= attackRadius) // checks if player is in lookrange and not in attack range
         {
-            // if in range get direction of player then normlize to prevent excess speed
-            Vector2 dir = target.position - transform.position;
-            dir.Normalize();
-            // moves enemy towards player 
-            transform.Translate(dir * enemySpeed * Time.deltaTime);
-            isMoving = true;
+            Vector2 dir = target.position - transform.position; // calculate direct of player in the form of a vector 
+            dir.Normalize(); // normalize the direction so it doesnt exceed speed
+            transform.Translate(dir * enemySpeed * Time.deltaTime); // moves enemy towards player 
+            isMoving = true; // set both bool to true
             attackPlayer = true;
         }
-        else if (distance <= attackRadius)
+        else if (distance <= attackRadius) // if player is within attack radius
         {
-            isMoving = false;
+            isMoving = false; // set both bool to false
             attackPlayer = true;
         }
         
-        // creates a circle with half radius of look 
-        // check if enemy is in area and has been attack
-        Collider2D[] surroundingEnemys = Physics2D.OverlapCircleAll(transform.position, lookRadius/2, LayerMask.GetMask("Enemy"));
-        // checks all items in list and runs the following code
-        foreach (Collider2D surroundingEnemy in surroundingEnemys)
+        Collider2D[] surroundingEnemys = Physics2D.OverlapCircleAll(transform.position, lookRadius/2, LayerMask.GetMask("Enemy")); // creates a circle with half radius of look radius and place all nearby enemies in a list
+        foreach (Collider2D surroundingEnemy in surroundingEnemys) // checks all items in list and runs the following code
         {
-            // gets the Enemy script from each enemy
-            Enemy enemyData = surroundingEnemy.gameObject.GetComponent<Enemy>();
-
+            Enemy enemyData = surroundingEnemy.gameObject.GetComponent<Enemy>(); // gets the Enemy script from each enemy
             if (enemyData != null)
             {
-                if (enemyData.attackPlayer)
+                if (enemyData.attackPlayer) // bool to check is enemy should attack player 
                 {
-                    // set radius to infinite to prevent players from running away
-                    lookRadius = 1000;
+                    lookRadius = 1000; // set radius to infinite to prevent players from running away
                 }
             }
         }
     }
 
     void EnemyAiming() // handle enemy aiming
-    {
-        Transform gunHolder = transform.Find("EnemyWeaponHolder");
-        // similar code from GunAim.cs
+    {   
+        Transform gunHolder = transform.Find("EnemyWeaponHolder"); // find weapon container/holder
         Vector2 dir = target.position - gunHolder.position; // get direction of player 
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // calculates angle and converts to degrees using mathf.rad2deg
         gunHolder.eulerAngles = new Vector3(0, 0, angle); // apply angle to object
         
-        // flip gun when past y axis
-
-        Vector3 localScale = Vector3.one;
-
-        if (angle > 89 || angle < -89)
+        Vector3 localScale = Vector3.one;// flip gun when past y axis
+        if (angle > 89 || angle < -89) // use 89 to prevent both flips interfering 
         {
             localScale.y = -1f;
         }
@@ -150,8 +134,7 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(float damage)
     {
         health -= damage; // subtracts health by damage
-        // checks if health is below 0
-        if (health <= 0)
+        if (health <= 0) // checks if health is below 0
         {
             Die(); // if below zero die
         }
@@ -161,6 +144,4 @@ public class Enemy : MonoBehaviour
         GetComponent<LootTable>().GetDroppedLoot(); // check if enemy is lootable/has LootTable script
         Destroy(gameObject); // remove enemy from existence
     }
-
-
 }

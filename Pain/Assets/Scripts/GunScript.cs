@@ -46,7 +46,7 @@ public class GunScript : MonoBehaviour
     void FixedUpdate()
     {
         GetValues();
-        if (gameObject.CompareTag("Item"))
+        if (gameObject.CompareTag("Loot"))
         {
             gunObject.GetComponent<SpriteRenderer>().sortingOrder = 4; // subtract 1 from sorting layer so it always shows under the player 
         }
@@ -59,12 +59,12 @@ public class GunScript : MonoBehaviour
     }
     void GetValues()
     {
-        totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
-        totalDamage = (baseDamage + playerDamage) * playerDamageMulti; // same but damage
-
         playerBulletSpread = player.GetComponent<Player>().bulletSpreadAngle; // get values from playerstat script
         playerDamage = player.GetComponent<Player>().bonusDamage;
         playerDamageMulti = player.GetComponent<Player>().damageMultiplier;
+
+        totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
+        totalDamage = (baseDamage + playerDamage) * playerDamageMulti; // same but damage
     }
 
     void DetectShooting()
@@ -116,7 +116,7 @@ public class GunScript : MonoBehaviour
     {
         Vector2 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position); // find direction of mouse 
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // calculates angle and converts to degrees using mathf.rad2deg
-        transform.eulerAngles = new Vector3(0, 0, angle); 
+        transform.eulerAngles = new Vector3(0, 0, angle); // apply rotation
 
         Vector3 localScale = Vector3.one;
 

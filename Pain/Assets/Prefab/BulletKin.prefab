@@ -78,8 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eec11368ea4c25e418afad1dc5299cb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lootList:
-  - Coin
+  lootTableList:
   - gun0
   gun0: {fileID: 1001094837229124377, guid: f263fb0e219cbd14ab84443779fcb473, type: 3}
 --- !u!212 &4794944907271097332

@@ -12,23 +12,6 @@ public class LootTable : MonoBehaviour
     private GameObject playerObject; // get player
     Player player;
 
-    public Dictionary<string, float> dropChance = new Dictionary<string, float>
-    {
-        {"Coin", 100f},
-        {"gun0", 100f}
-    };
-
-    public Dictionary<string, bool> isStackable = new Dictionary<string, bool>
-    {
-        {"gun0", false}
-    };
-
-    public GameObject gun0;
-
-
-
-
-
     private void Start()
     {
         playerObject = GameObject.FindGameObjectWithTag("Player"); // get player object
@@ -46,24 +29,30 @@ public class LootTable : MonoBehaviour
 
         foreach (string lootString in lootTableList) // loop through each item in lootList
         {
-            if (roundedNumber <= dropChance[lootString]) // check if item should drop from dictionary
+            if (roundedNumber <= ObtainDefinitions.Instance.dropChance[lootString]) // check if item should drop from dictionary
             {
                 switch(lootString) // start switch statement passing in name of loot
                 {
+                    // put this somewhere else not in switch --- always true
                     case "Coin": // 100% drop chance
                         float rngCoins = Random.Range(-1,6); // 1-5 inclusive
                         player.totalCoins += rngCoins * player.coinMultiplier; // increase player coin balance
                         break; // does not add to possibleloot
                     // add exp here later on
 
-                    case "gun0": 
-                        possibleLoot.Add(gun0); // add to loot pool
+                    case "gun0": // PROBABLY CAN MAKE THIS SO MULTIPLE CASES DIRECTS TO ADD ITEM CHECK DICTUONARY ---------------------------
+                        possibleLoot.Add(ObtainDefinitions.Instance.gun0); // add to loot pool
                         Debug.Log("added loot gun0 to possible loot");
                         break;
-                    
+                    case "TestLoot0":
+                        possibleLoot.Add(ObtainDefinitions.Instance.testLoot0); // add to loot pool
+                        Debug.Log("added loot TestLoot0 to possible loot");
+                        break;
                     default: 
                         Debug.Log("Something passed switchcase in LootTable"); 
                         break;
+                    
+
                 }
             }
         }
@@ -75,21 +64,12 @@ public class LootTable : MonoBehaviour
         {
             lootObject = possibleLoot[0]; // get first/only object in list
         }
-        Debug.Log(lootObject);
 
         if (lootObject != null)
         {
             InstantiateLoot(lootObject); // only called if lootObject is not null
         }
-        
     }
-
-
-
-    // put in instantiate loot
-    // Instantiate(gun0, transform.position, Quaternion.identity);
-    
-    // GunScript gunScriptComp = gun0.GetComponent<GunScript>();
 
     public void InstantiateLoot(GameObject dropThisLoot)
     {   
@@ -97,15 +77,24 @@ public class LootTable : MonoBehaviour
         float upperBound = 101f + 10 * (player.playerLevel/10); // every 10 levels add 10 to max 
         if (dropThisLoot.GetComponent<GunScript>())
         {
-            dropThisLoot.tag = "Item";
-            GunScript modifyScript = dropThisLoot.GetComponent<GunScript>();
-            
+            GameObject createdObject = Instantiate(dropThisLoot, transform.position, Quaternion.identity); // create object FIRST
+            createdObject.tag = "Loot"; // apply loot tag to dropped object
 
 
+            // do this for all stats //
+            GunScript modifyScript = createdObject.GetComponent<GunScript>(); // get script
             modifyScript.baseDamage = Mathf.Round(Random.Range(lowerBound, upperBound/10)*100f)/100f; // round to 2dp
 
 
-            Instantiate(dropThisLoot, transform.position, Quaternion.identity); // create object
+
+            CollectibleLoot collectibleLoot = createdObject.GetComponent<CollectibleLoot>(); // get collectibleloot component
+            collectibleLoot.isInWorld = true;
+        }
+        else
+        {
+            GameObject createdObject = Instantiate(dropThisLoot, transform.position, Quaternion.identity);
+            CollectibleLoot collectibleLoot = createdObject.GetComponent<CollectibleLoot>(); // get collectibleloot component
+            collectibleLoot.isInWorld = true;
         }
         // reminder to add loot drop for enemy script
         // replace this on enemy script with something else

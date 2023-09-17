@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
     public float coinMultiplier = 1; 
     public float playerLevel; // temp
     public float totalExp; // temp
-    public float expMultiplier; // temp
+    public float expMultiplier = 1; // temp
     public float bonusDamage;
     public float damageMultiplier = 1; // higher is better default = 1 but can be > 0
     public float bulletSpreadAngle; // DEGREES
@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     public float defenceMultiplier = 1; // lower = better
     private PlayerInventory playerInventory;
     public GameUI gameUI;
-    private GameObject collidedLoot;
+
 
      
     private void Start()
@@ -34,7 +34,6 @@ public class Player : MonoBehaviour
         curHealth = maxHealth; // initiates the player character
 
         playerInventory = GetComponent<PlayerInventory>(); // create new inventory instance
-        Debug.Log("jkdbsafh");
         gameUI.SetInventory(playerInventory); // pass playerinventory into ui script
     }
 
@@ -97,22 +96,5 @@ public class Player : MonoBehaviour
                 TakeDamage(totalDealtDamage); // calls takedamage function with damage as parameter 
             }
         }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.CompareTag("Item"))
-        {
-            collidedLoot = collider.gameObject;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collider)
-    {
-        if (collider.gameObject == collidedLoot)
-        {
-            collidedLoot = collider.gameObject;
-        }
-        
-    }
+    }    
 }
