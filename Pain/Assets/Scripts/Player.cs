@@ -23,9 +23,6 @@ public class Player : MonoBehaviour
     public float defence; // higher = better
     public float defenceMultiplier = 1; // lower = better
     private PlayerInventory playerInventory;
-    public GameUI gameUI;
-
-
      
     private void Start()
     {
@@ -34,7 +31,6 @@ public class Player : MonoBehaviour
         curHealth = maxHealth; // initiates the player character
 
         playerInventory = GetComponent<PlayerInventory>(); // create new inventory instance
-        gameUI.SetInventory(playerInventory); // pass playerinventory into ui script
     }
 
     private void FixedUpdate()

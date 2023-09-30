@@ -8,22 +8,26 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 {
 
     // apply script on all gameobjects that can be loot
-    public bool isInWorld; // check if item is on the ground, set by whom ever drops it
-    private bool collectible;
+    public bool isInWorld; // check if item is on the ground/in the world
+    private bool collectible; // if player is hovering over item, become true otherwise false
     private PlayerInventory playerInventory;
-    private GameObject lootToBeAdded;
-    public Transform lootParent; // stores original parent of dragged object
+    public GameObject lootToBeAdded = null;
+    public Transform lootParent = null; // stores original parent of dragged object
     private Image image;
-    public bool isCursed; // if cursed, player shouldnt be able to move/drop the item
 
-    private void Start()
+    public string lootType; // e.g. guns, healing, gun upgrade, armor, trinkets // try create dropdown menu enum
+    public bool isCursed; // if cursed, player shouldnt be able to move/drop the item
+    public bool canBeUsed; // if item can be used while in inventory e.g. health potion 
+
+    private void Awake()
     {
         image = GetComponent<Image>();
         GameObject player = GameObject.FindGameObjectWithTag("Player"); // get player object
         playerInventory = player.GetComponent<PlayerInventory>(); // get player inventory
+
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (isInWorld && collectible && Input.GetKey(KeyCode.E)) 
         // check if e is pressed, is in the physical world and is collectible 
@@ -37,6 +41,7 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         if (collision.gameObject.CompareTag("Player")) // check if collision is an item
         {
             lootToBeAdded = transform.gameObject; // save object in an variable 
+            lootToBeAdded.name = lootToBeAdded.name.Replace("(Clone)", "").Trim(); // remove all (clone) in name and any leading/following spaces
             collectible = true; // object is now collectible 
 
             // add some onscreen ui stat notif thing later
@@ -54,9 +59,7 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private void PickUp()
     {   
-        lootToBeAdded.name = lootToBeAdded.name.Replace("(Clone)", "").Trim(); // remove all (clone) in name and any leading/following spaces
-
-        if (playerInventory.fullInventory)
+        if (playerInventory.inventoryCount > 20) // if inventory is full
         {
             if (playerInventory.stackedLoot.ContainsKey(lootToBeAdded.name)) // check if item in player inventory
             {
@@ -72,7 +75,7 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         else
         {
             playerInventory.AddLoot(lootToBeAdded); // call method from playerinv class to place into inv
-            if (ObtainDefinitions.Instance.isStackable.ContainsKey(lootToBeAdded.name)) // only destory item is is stackable and is already in inventory
+            if (ObtainDefinitions.Instance.isStackable[lootToBeAdded.name]) // only destory item is is stackable and is already in inventory
             {
                 if (playerInventory.stackedLoot[lootToBeAdded.name] > 2) // needs to have atleast one in the world before deleting
                 {
@@ -89,25 +92,33 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 lootToBeAdded.SetActive(false); // hides gameobject but not deletes as it may need to be referenced
             }
         }
+        Destroy(transform.gameObject); // delete gameobject as it is no longer needed
     }
 
     public void OnBeginDrag(PointerEventData eventData) // activates when dragging of item starts 
     {
-        Debug.Log("A");
-        lootParent = transform.parent; // gets parent of object which is the slot container and stores it as parent
-        transform.SetParent(transform.root); // set parent as the highest point in the heirarchy
-        transform.SetAsLastSibling(); // places it at the top of the hierarchy for dragging layer
-        image.raycastTarget = false;
+        if (!isCursed)
+        {
+            lootParent = transform.parent; // gets parent of object which is the slot container and stores it as parent
+            transform.SetParent(transform.root); // set parent as the highest point in the heirarchy
+            transform.SetAsLastSibling(); // places it at the top of the hierarchy for dragging layer
+            image.raycastTarget = false;
+        } 
     }
     public void OnDrag(PointerEventData eventData) // activates when actively dragging
     {
-        Debug.Log("B");
-        transform.position = Input.mousePosition; // translates object to the same position as the player mouse
+        if (!isCursed)
+        {
+            transform.position = Input.mousePosition; // translates object to the same position as the player mouse
+        }
+        
     }
     public void OnEndDrag(PointerEventData eventData) // activates when dropping dragged item
     {
-        Debug.Log("C");
-        transform.SetParent(lootParent); // set parent to old slot 
-        image.raycastTarget = true;
+        if (!isCursed)
+        {
+            transform.SetParent(lootParent); // set parent to old slot 
+            image.raycastTarget = true;
+        }
     }
 }

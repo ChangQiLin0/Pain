@@ -22,7 +22,7 @@ public class GunScript : MonoBehaviour
     private float totalAmmo; // total ammo player has (base+playerbonus)
     public float baseAmmo; // default ammo of gun
     private float playerAmmo; // bonus ammo by player stat
-    private float curAmmo; // current ammo remaining 
+    public float curAmmo; // current ammo remaining 
 
     public float baseFireRate; // lower firerate = faster
     private float fireRateTimer; // timer for shooting

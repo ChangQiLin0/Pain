@@ -79,8 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lootTableList:
-  - gun0
-  gun0: {fileID: 1001094837229124377, guid: f263fb0e219cbd14ab84443779fcb473, type: 3}
+  - Gun0
+  - TestLoot0
 --- !u!212 &4794944907271097332
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -40,7 +40,7 @@ public class LootTable : MonoBehaviour
                         break; // does not add to possibleloot
                     // add exp here later on
 
-                    case "gun0": // PROBABLY CAN MAKE THIS SO MULTIPLE CASES DIRECTS TO ADD ITEM CHECK DICTUONARY ---------------------------
+                    case "Gun0": // PROBABLY CAN MAKE THIS SO MULTIPLE CASES DIRECTS TO ADD ITEM CHECK DICTUONARY ---------------------------
                         possibleLoot.Add(ObtainDefinitions.Instance.gun0); // add to loot pool
                         Debug.Log("added loot gun0 to possible loot");
                         break;
@@ -51,8 +51,6 @@ public class LootTable : MonoBehaviour
                     default: 
                         Debug.Log("Something passed switchcase in LootTable"); 
                         break;
-                    
-
                 }
             }
         }
