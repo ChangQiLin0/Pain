@@ -15,7 +15,7 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public Transform lootParent = null; // stores original parent of dragged object
     private Image image;
 
-    public string lootType; // e.g. guns, healing, gun upgrade, armor, trinkets // try create dropdown menu enum
+    public string lootType; // e.g. gun, trinket, helmet, chestplate // try create dropdown menu enum
     public bool isCursed; // if cursed, player shouldnt be able to move/drop the item
     public bool canBeUsed; // if item can be used while in inventory e.g. health potion 
 
@@ -40,7 +40,7 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (collision.gameObject.CompareTag("Player")) // check if collision is an item
         {
-            lootToBeAdded = transform.gameObject; // save object in an variable 
+            lootToBeAdded = transform.gameObject; // save object in an variable to save
             lootToBeAdded.name = lootToBeAdded.name.Replace("(Clone)", "").Trim(); // remove all (clone) in name and any leading/following spaces
             collectible = true; // object is now collectible 
 
@@ -92,7 +92,6 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 lootToBeAdded.SetActive(false); // hides gameobject but not deletes as it may need to be referenced
             }
         }
-        Destroy(transform.gameObject); // delete gameobject as it is no longer needed
     }
 
     public void OnBeginDrag(PointerEventData eventData) // activates when dragging of item starts 

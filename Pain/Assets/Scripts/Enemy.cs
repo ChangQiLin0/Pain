@@ -80,13 +80,11 @@ public class Enemy : MonoBehaviour
     private void EnemyMovement()
     {
         float distance = Vector2.Distance(transform.position, target.position); // calculated distance from player to enemy
-
         
         if (distance <= lookRadius && distance >= attackRadius) // checks if player is in lookrange and not in attack range
         {
             Vector2 dir = target.position - transform.position; // calculate direct of player in the form of a vector 
-            dir.Normalize(); // normalize the direction so it doesnt exceed speed
-            transform.Translate(dir * enemySpeed * Time.deltaTime); // moves enemy towards player 
+            transform.Translate(dir.normalized * enemySpeed * Time.deltaTime); // moves enemy towards player 
             isMoving = true; // set both bool to true
             attackPlayer = true;
         }

@@ -15,7 +15,6 @@ public class ObtainDefinitions : MonoBehaviour
 
     public Dictionary<string, float> dropChance = new Dictionary<string, float> // get drop chance for each item 
     {
-        {"Coin", 100f},
         {"Gun0", 100f},
         {"TestLoot0", 100f}
     };
@@ -48,8 +47,9 @@ public class ObtainDefinitions : MonoBehaviour
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         player = playerObject.GetComponent<Player>(); // get player component so it can be accessed
 
-        lootDescription.Add("gun", Gun);
+        lootDescription.Add("Gun", Gun);
         lootDescription.Add("TestLoot0", TestLoot0); // currently a place holder
+        lootDescription.Add("Helmet", TestLoot0); // currently a place holder
     }
 
     public string Gun(string functionType, GameObject gameObject) // function which returns a string and takes in what function it should do + gameobject 

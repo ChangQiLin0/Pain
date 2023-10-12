@@ -28,18 +28,26 @@ public class LootTable : MonoBehaviour
         GameObject lootObject = null; // default to null (no loot dropped)
 
         foreach (string lootString in lootTableList) // loop through each item in lootList
-        {
-            if (roundedNumber <= ObtainDefinitions.Instance.dropChance[lootString]) // check if item should drop from dictionary
+        {   
+            if (!ObtainDefinitions.Instance.dropChance.ContainsKey(lootString)) // if lootstring isnt in dropchance
+            {
+                switch(lootString)
+                {
+                    case "Coin": // 100% drop chance
+                        float rngCoins = Random.Range(0,6); // 0-5 inclusive
+                        player.totalCoins += rngCoins * player.coinMultiplier; // increase player coin balance
+                        break; // does not add to possibleloot
+                    case "Exp": // 100% drop chance
+                        float rngExp = Random.Range(0,6); // 0-5 inclusive
+                        player.totalExp += rngExp * player.expMultiplier; // increase player exp
+                        player.LevelUpCalculation(); // update player exp
+                        break;
+                }
+            }
+            else if (roundedNumber <= ObtainDefinitions.Instance.dropChance[lootString]) // check if item should drop from dictionary
             {
                 switch(lootString) // start switch statement passing in name of loot
                 {
-                    // put this somewhere else not in switch --- always true
-                    case "Coin": // 100% drop chance
-                        float rngCoins = Random.Range(-1,6); // 1-5 inclusive
-                        player.totalCoins += rngCoins * player.coinMultiplier; // increase player coin balance
-                        break; // does not add to possibleloot
-                    // add exp here later on
-
                     case "Gun0": // PROBABLY CAN MAKE THIS SO MULTIPLE CASES DIRECTS TO ADD ITEM CHECK DICTUONARY ---------------------------
                         possibleLoot.Add(ObtainDefinitions.Instance.gun0); // add to loot pool
                         Debug.Log("added loot gun0 to possible loot");
@@ -84,7 +92,8 @@ public class LootTable : MonoBehaviour
             modifyScript.baseDamage = Mathf.Round(Random.Range(lowerBound, upperBound/10)*100f)/100f; // round to 2dp
 
 
-
+            // add rng to curse loot
+            // place variable in player component and set to global
             CollectibleLoot collectibleLoot = createdObject.GetComponent<CollectibleLoot>(); // get collectibleloot component
             collectibleLoot.isInWorld = true;
         }

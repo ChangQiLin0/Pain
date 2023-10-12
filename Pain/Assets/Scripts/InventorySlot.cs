@@ -15,18 +15,21 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     public TextMeshProUGUI description;
     public LayoutElement layoutElement;
     private int characterWrapLimit = 50;
+    private GameObject player;
     private PlayerInventory playerInventory;
     private bool canDrop;
     private GameObject selectedObject;
 
     private void Awake()
     {
-        playerInventory = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInventory>(); // get player inventory component
+        player = GameObject.FindGameObjectWithTag("Player"); // get player object
+        playerInventory = player.GetComponent<PlayerInventory>(); // get player inventory component
     }
     private void Update()
     {
         TooltipUpdate();
-        StackValueUpdate();     
+        StackValueUpdate();
+        //GunSlot();     
         if (Input.GetKeyDown(KeyCode.Q) && canDrop && selectedObject != null)
         {
             dropLoot();
@@ -35,27 +38,41 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
 
     private void OnDisable()
     {
-        OnPointerExit(null);
+        OnPointerExit(null); // close/hides all ui elements
     }
 
     public void OnDrop(PointerEventData eventData) // when item has been dropped onto inv slot
     {
-        if (transform.childCount == 1) // if it has one item it means its empty
+        GameObject droppedObject = eventData.pointerDrag; // gets and stores dropped object on slot
+        CollectibleLoot lootComponent = droppedObject.GetComponent<CollectibleLoot>(); // get collecible loot script 
+        Transform originalParent = lootComponent.lootParent; // store original parent as temp variable for later use 
+        Transform itemInSlot = transform.GetChild(0); // get child object
+        
+        if (transform.name == "ItemSlot" || transform.name == lootComponent.lootType) // if dropped place is item  slot or matches loot slot
         {
-            GameObject droppedObject = eventData.pointerDrag; // gets and stores dropped object on slot
-            CollectibleLoot lootComponent = droppedObject.GetComponent<CollectibleLoot>(); // get collecible loot script 
-            lootComponent.lootParent = transform; // set parent current slot
-        }
-        else if (transform.childCount == 2 && !eventData.pointerDrag.GetComponent<CollectibleLoot>().isCursed && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed) // if item/child is present and both items are not cursed/is able to swap
-        {
-            GameObject droppedObject = eventData.pointerDrag; // gets and stores dropped object on slot 
-            CollectibleLoot lootComponent = droppedObject.GetComponent<CollectibleLoot>(); // get collecible loot script
-            Transform originalParent = lootComponent.lootParent; // store original parent as temp variable for later use 
-            Transform itemInSlot = transform.GetChild(0); // get child object
-            
-            lootComponent.lootParent = transform; // set transform in original script so it doesnt swap back
-            droppedObject.transform.SetParent(transform); // swap with current slot
-            itemInSlot.SetParent(originalParent); // swap with original parent
+            if (transform.childCount == 1) // if it has one item it means its empty
+            { 
+                if (transform.name != "ItemSlot")
+                {
+                    playerInventory.inventoryCount --; // subtract 1 from inv counter
+                }
+                else if (originalParent.name != "ItemSlot")
+                {
+                    playerInventory.inventoryCount ++; // add 1 to inv counter
+                }
+
+                lootComponent.lootParent = transform; // set parent current slot
+            }
+            else if (transform.childCount == 2 && !lootComponent.isCursed && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed) // if item/child is present and both items are not cursed
+            {   
+                string itemInSlotLootType = itemInSlot.GetComponent<CollectibleLoot>().lootType;
+                if (itemInSlotLootType == transform.name || itemInSlotLootType == originalParent.name || transform.name == "ItemSlot" || originalParent.name == "ItemSlot") // both items are the same loot type as inv
+                {
+                    lootComponent.lootParent = transform; // set transform in original script so it doesnt swap back
+                    droppedObject.transform.SetParent(transform); // swap with current slot
+                    itemInSlot.SetParent(originalParent); // swap with original parent
+                }
+            }
         }
     }
 
@@ -82,46 +99,56 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
 
     private void dropLoot()
     {
-        GameObject player = GameObject.FindGameObjectWithTag("Player"); // get player object
-        Instantiate(selectedObject, player.transform.position, Quaternion.identity); // instantiate object into world at player position
-        if (playerInventory.stackedLoot.ContainsKey(selectedObject.name))
-        {   
-            if (playerInventory.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
+        if (transform.name == "ItemSlot" && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed)
+        {
+            Instantiate(selectedObject, player.transform.position, Quaternion.identity); // instantiate object into world at player position
+            if (playerInventory.stackedLoot.ContainsKey(selectedObject.name))
+            {   
+                if (playerInventory.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
+                {
+                    playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
+                    OnPointerExit(null); // call onpointerexit to hide tooltip
+                    Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
+                    playerInventory.inventoryCount --; // minus 1 from inventory count
+                }
+                else
+                {
+                    playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
+                }
+            }
+            else
             {
-                Debug.Log("1.5");
-                playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
                 OnPointerExit(null); // call onpointerexit to hide tooltip
                 Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
                 playerInventory.inventoryCount --; // minus 1 from inventory count
             }
-            else
-            {
-                playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
-            }
-        }
-        else
-        {
-            Debug.Log("2");
-            OnPointerExit(null); // call onpointerexit to hide tooltip
-            Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
-            playerInventory.inventoryCount --; // minus 1 from inventory count
         }
     }
 
     private void TooltipContent(PointerEventData eventData)
     {
         GameObject getGameObject = transform.GetChild(0).gameObject; // get child component as a gameobject
-        string getLootType = getGameObject.GetComponent<CollectibleLoot>().lootType; // get loot type which was predefined on the item
-        string getLootName = getGameObject.GetComponent<CollectibleLoot>().lootToBeAdded.name.Replace("(Clone)", "").Trim(); // get loot name/name of gameobject
+        CollectibleLoot collectibleComponent = getGameObject.GetComponent<CollectibleLoot>();
+        string getLootType = collectibleComponent.lootType; // get loot type which was predefined on the item
+        string getLootName = collectibleComponent.lootToBeAdded.name.Replace("(Clone)", "").Trim(); // get loot name/name of gameobject
 
         header.text = getLootName;
         description.text = ObtainDefinitions.Instance.lootDescription[getLootType]("desc", getGameObject); // create description by calling method in obtain def
 
-        description.text += "<br><br>Press Q to drop";
-        if (ObtainDefinitions.Instance.isUseable[getLootName])
+        if (transform.name == "ItemSlot" && !collectibleComponent.isCursed) // check if cursed is false
+        {
+            description.text += "<br><br>Press Q to drop";
+        }
+
+        if (collectibleComponent.isCursed) // if cursed is true
+        {
+            description.text += "<br><br>Cursed";
+        }
+
+        if (ObtainDefinitions.Instance.isUseable[getLootName]) // check defenitions to see if loot is useable
         {
             description.text += "<br>Press E to use";
-        }   
+        }
 
         int headerLength = header.text.Length; // get number of letters/length of header
         int descriptionLength = description.text.Length; // get length of description
@@ -200,4 +227,17 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             transform.GetChild(0).gameObject.SetActive(false); // set visibility to false
         }
     }
+
+    private void GunSlot()
+    {
+        if (transform.childCount == 2)
+        {
+            if (transform.name == "Gun")
+            {
+                Debug.Log("two");
+            }
+        }
+    }
+
+
 }

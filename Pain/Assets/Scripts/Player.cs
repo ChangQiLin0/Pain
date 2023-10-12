@@ -8,14 +8,16 @@ public class Player : MonoBehaviour
     private Animator playerAnimation;
     private bool facingRight = true;
     private Vector2 moveVector; // store player movement input e.g. WASD
-    public float totalMoveSpeed; // additional will be done later
+    public float totalMoveSpeed = 5;
     public float maxHealth = 200;
     public float curHealth = 200;
     public float totalCoins = 0;
     public float coinMultiplier = 1; 
-    public float playerLevel; // temp
-    public float totalExp; // temp
+    public float totalExp = 0; // temp
+    public float nextReqExp = 30; // base level exp req is 30
     public float expMultiplier = 1; // temp
+    public float playerLevel = 1; // temp
+    public int skillPoints = 0;
     public float bonusDamage;
     public float damageMultiplier = 1; // higher is better default = 1 but can be > 0
     public float bulletSpreadAngle; // DEGREES
@@ -41,22 +43,16 @@ public class Player : MonoBehaviour
 
     private void HandleInputs()
     {
-        // gets horizontal and vertical inputs e.g. wasd or arrow keys
-        moveVector.x = Input.GetAxisRaw("Horizontal");
-        moveVector.y = Input.GetAxisRaw("Vertical");
+        moveVector.x = Input.GetAxisRaw("Horizontal"); // get horizonal inputs e.g. W/S and Up/Down
+        moveVector.y = Input.GetAxisRaw("Vertical"); // get vertical inputs e.g. A/D and Left/Right
+        rb.velocity = moveVector.normalized * totalMoveSpeed; // apply movement to player
 
-        // Follow cursor
-        Vector2 mouseDir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position);
-
-        // checks for what direction the movement is to check if flip on y axis for sprites is required
-        // Change moveVector to dir to follow cursor
-        
-        if (mouseDir.x > 0 && !facingRight || mouseDir.x < 0 && facingRight)
+        Vector2 mouseDir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position); // get player cursor position as vector
+        if (mouseDir.x > 0 && !facingRight || mouseDir.x < 0 && facingRight) // checks if flipping sprite is required
         {
-            facingRight = !facingRight;
+            facingRight = !facingRight; // set facing right to false (facing left)
             transform.Rotate(0f, 180f, 0f); // flips/mirrors sprites on the y axis
         }
-        rb.velocity = moveVector.normalized * totalMoveSpeed; // apply movement to player
     }
 
     private void Animation()
@@ -93,4 +89,18 @@ public class Player : MonoBehaviour
             }
         }
     }    
+
+    public void LevelUpCalculation()
+    {
+        Debug.Log("total exp" + totalExp);
+        if (totalExp >= nextReqExp)
+        {
+            Debug.Log(playerLevel + " req: "+ nextReqExp);
+            totalExp -= nextReqExp; // keep any extra exp and transfer to next level
+            playerLevel += 1; // add one to player level
+            skillPoints += Random.Range(1,4);; // add between 1-3 skill points
+            nextReqExp = 25 * Mathf.Pow(1.2f, playerLevel); // 25 x 1.2^playerLevel
+            Debug.Log(playerLevel + " req: "+ nextReqExp);
+        }
+    }
 }

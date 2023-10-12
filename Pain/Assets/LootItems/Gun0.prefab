@@ -56,6 +56,7 @@ MonoBehaviour:
   totalDamage: 0
   baseDamage: 10
   baseAmmo: 15
+  curAmmo: 0
   baseFireRate: 0.1
   baseReloadSpeed: 0.5
   isSelected: 0
@@ -74,7 +75,7 @@ MonoBehaviour:
   isInWorld: 0
   lootToBeAdded: {fileID: 0}
   lootParent: {fileID: 0}
-  lootType: gun
+  lootType: Gun
   isCursed: 0
   canBeUsed: 0
 --- !u!61 &2807611224883899754
