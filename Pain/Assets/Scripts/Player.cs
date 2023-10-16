@@ -24,6 +24,8 @@ public class Player : MonoBehaviour
     public int bonusAmmo; // bonus ammo for player
     public float defence; // higher = better
     public float defenceMultiplier = 1; // lower = better
+    public int leechChance = 0; // chance to leech health from enemy 0-100
+    public int leechPercent = 0; // percentage of health leeched 0-100
     private PlayerInventory playerInventory;
      
     private void Start()
@@ -71,6 +73,15 @@ public class Player : MonoBehaviour
     public void TakeDamage(float damageAmount)
     {
         curHealth -= damageAmount; // deal damage to current health not total
+    }
+
+    public void Heal(float healValue)
+    {
+        curHealth += healValue; // add healvalue to total health
+        if (curHealth > maxHealth) // check if healed amount is greater than max health
+        {
+            curHealth = maxHealth; // set curhealth to maxhealth if surpassed
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

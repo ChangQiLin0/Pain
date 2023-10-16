@@ -96,7 +96,7 @@ public class GunScript : MonoBehaviour
     {
         if (curAmmo <= 0 || Input.GetKeyDown(KeyCode.R)) // check if reload conditions are met
         {
-            
+            Debug.Log("Reloading");
             isReloading = true; // set reload to true so player cant shoot
             curAmmo = totalAmmo; // set ammo to max
         }

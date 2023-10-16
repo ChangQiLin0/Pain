@@ -4,11 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
-using UnityEditor.Animations;
-using Unity.VisualScripting;
-using System.Diagnostics.Tracing;
-using UnityEngine.UIElements;
-
 public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public TextMeshProUGUI header;
@@ -48,10 +43,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         Transform originalParent = lootComponent.lootParent; // store original parent as temp variable for later use 
         Transform itemInSlot = transform.GetChild(0); // get child object
         
-        if (transform.name == "ItemSlot" || transform.name == lootComponent.lootType) // if dropped place is item  slot or matches loot slot
+        if (droppedObject != null && (transform.name == "ItemSlot" || transform.name == lootComponent.lootType)) // if dropped place is item  slot or matches loot slot
         {
             if (transform.childCount == 1) // if it has one item it means its empty
             { 
+                Debug.Log("dropped onto slot");
                 if (transform.name != "ItemSlot")
                 {
                     playerInventory.inventoryCount --; // subtract 1 from inv counter
@@ -65,6 +61,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             }
             else if (transform.childCount == 2 && !lootComponent.isCursed && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed) // if item/child is present and both items are not cursed
             {   
+                Debug.Log("swapping items");
                 string itemInSlotLootType = itemInSlot.GetComponent<CollectibleLoot>().lootType;
                 if (itemInSlotLootType == transform.name || itemInSlotLootType == originalParent.name || transform.name == "ItemSlot" || originalParent.name == "ItemSlot") // both items are the same loot type as inv
                 {
@@ -99,7 +96,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
 
     private void dropLoot()
     {
-        if (transform.name == "ItemSlot" && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed)
+        if (transform.name == "ItemSlot" && transform.childCount == 2 && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed)
         {
             Instantiate(selectedObject, player.transform.position, Quaternion.identity); // instantiate object into world at player position
             if (playerInventory.stackedLoot.ContainsKey(selectedObject.name))
@@ -107,9 +104,9 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                 if (playerInventory.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
                 {
                     playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
+                    playerInventory.inventoryCount --; // minus 1 from inventory count
                     OnPointerExit(null); // call onpointerexit to hide tooltip
                     Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
-                    playerInventory.inventoryCount --; // minus 1 from inventory count
                 }
                 else
                 {
@@ -184,15 +181,16 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     private void StackValueUpdate()
     {
         
-        int updatedSlotValue = 0; // default all stacks to 0
+        int updatedSlotValue = 0; // stores value to be updated with default all stacks to 0
+        string inventorySlotValue = "0"; 
         transform.GetChild(0).name = transform.GetChild(0).name.Replace("(Clone)", "").Trim();
-        string inventorySlotValue = "0";
+        
         if (transform.childCount == 1) // if item slot is empty 
         {
             transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "0"; // set to 0 as there are no items
         }
 
-        if (playerInventory.stackedLoot.ContainsKey(transform.GetChild(0).name))
+        if (playerInventory.stackedLoot.ContainsKey(transform.GetChild(0).name)) // if child is a stackable object
         {
             updatedSlotValue = playerInventory.stackedLoot[transform.GetChild(0).name]; // get to be update stack size
             inventorySlotValue = transform.GetChild(1).GetComponent<TextMeshProUGUI>().text; // get text for current stack size
@@ -204,7 +202,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             inventorySlotValue = transform.GetChild(1).GetComponent<TextMeshProUGUI>().text; // get text for stack size
             if (inventorySlotValue == null)
             {
-                Debug.Log("dkjsbfkhibshidfgbhabsgi");
                 inventorySlotValue = "0";
             }
         }
@@ -227,17 +224,4 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             transform.GetChild(0).gameObject.SetActive(false); // set visibility to false
         }
     }
-
-    private void GunSlot()
-    {
-        if (transform.childCount == 2)
-        {
-            if (transform.name == "Gun")
-            {
-                Debug.Log("two");
-            }
-        }
-    }
-
-
 }

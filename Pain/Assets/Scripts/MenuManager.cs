@@ -8,8 +8,11 @@ public class MenuManager : MonoBehaviour
 {
     public GameObject inventoryMenuUI; // store menu UI object
     public GameObject pauseMenuUI; // store menu UI object
+    public GameObject HUD; // store hud menu reference
+    public GameObject skillTreeUI; // store skill tree reference
     public bool isInInventory; // boolean to check is player has inventory open or not
     public bool isPaused; // boolean to check if the game is paused
+    public bool inMenu; // if player is in ANY menu e.g. inv, shop, skilltree etc
 
     private void Awake()
     {
@@ -23,12 +26,14 @@ public class MenuManager : MonoBehaviour
         {
             if (isInInventory) // close inventory
             {
+                inMenu = false;
                 inventoryMenuUI.SetActive(false); // set object to inactive which hides it from view 
                 Time.timeScale = 1f; // unfreeze game by setting timescale back to 1
                 isInInventory = false; // change to match current state which is closing inventory
             }
-            else if (!isInInventory) // open inventory
+            else if (!isInInventory && !inMenu) // open inventory if not in a menu
             {
+                inMenu = true;
                 inventoryMenuUI.SetActive(true); // set object to active so player can view and use the inventory
                 Time.timeScale = 0f; // freeze time by setting speed time is passing to 0
                 isInInventory = true; // change to show that inventory has been opened 
@@ -38,12 +43,14 @@ public class MenuManager : MonoBehaviour
         {
             if (isPaused) // resume game
             {
+                inMenu = false;
                 pauseMenuUI.SetActive(false);
                 Time.timeScale = 1f; // unfreeze game by setting timescale back to 1
                 isPaused = false;
             }
-            else if (!isPaused) // pause game
+            else if (!isPaused && !inMenu) // pause game
             {
+                inMenu = true;
                 pauseMenuUI.SetActive(true);
                 Time.timeScale = 0f; // freeze time by setting speed time is passing to 0
                 isPaused = true;
