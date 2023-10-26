@@ -134,16 +134,14 @@ public class Enemy : MonoBehaviour
         health -= damage; // subtracts health by damage
         if (player.leechChance > 0) // if leech chance is greater than 0
         {
-            
             int rng = Random.Range(0, 101); // random number generator from 0 to 100 inclusive
             if (player.leechChance > rng) // if random number is less than leechchance
             {
-                player.Heal(damage * (player.leechPercent/100)); // healValue = damage dealt by player / leech percent
+                player.Heal(damage * (player.leechPercent/100f)); // healValue = damage dealt by player / leech percent
             }
         }
         if (health <= 0) // checks if health is below 0
         {
-            
             Die(); // if below zero die
         }
     }

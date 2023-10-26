@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour
     public bool isInInventory; // boolean to check is player has inventory open or not
     public bool isPaused; // boolean to check if the game is paused
     public bool inMenu; // if player is in ANY menu e.g. inv, shop, skilltree etc
+    public bool inSkillTree; // check if player is in skilltree
 
     private void Awake()
     {
@@ -56,5 +57,28 @@ public class MenuManager : MonoBehaviour
                 isPaused = true;
             }
         }
+        manageSkillTree();
+    }
+
+    public void manageSkillTree()
+    {
+       if ((Input.GetKeyDown(KeyCode.P) && !inMenu) || (Input.GetKeyDown(KeyCode.P) && inMenu && inSkillTree)) // if E key is pressed
+       {
+        Debug.Log("skillTree");
+            if (inSkillTree) // close skill tree
+            {
+                skillTreeUI.SetActive(false); // set UI element to inactive
+                inSkillTree = false;
+                inMenu = false;
+                Time.timeScale = 1f; // resume time
+            }
+            else if (!inSkillTree) // open skill tree
+            {
+                skillTreeUI.SetActive(true); // set UI element to active
+                inSkillTree = true;
+                inMenu = true;
+                Time.timeScale = 0f; // pause time
+            }
+       }
     }
 }

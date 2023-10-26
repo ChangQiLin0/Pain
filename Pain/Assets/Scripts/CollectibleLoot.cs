@@ -10,7 +10,7 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     // apply script on all gameobjects that can be loot
     public bool isInWorld; // check if item is on the ground/in the world
     private bool collectible; // if player is hovering over item, become true otherwise false
-    private PlayerInventory playerInventory;
+    private InventoryUI inventoryUI;
     public GameObject lootToBeAdded = null;
     public Transform lootParent = null; // stores original parent of dragged object
     private Image image;
@@ -19,12 +19,11 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public bool isCursed; // if cursed, player shouldnt be able to move/drop the item
     public bool canBeUsed; // if item can be used while in inventory e.g. health potion 
 
-    private void Awake()
+    private void Start()
     {
         image = GetComponent<Image>();
         GameObject player = GameObject.FindGameObjectWithTag("Player"); // get player object
-        playerInventory = player.GetComponent<PlayerInventory>(); // get player inventory
-
+        inventoryUI = ObtainDefinitions.Instance.InventoryUI;
     }
 
     private void Update()
@@ -59,11 +58,12 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private void PickUp()
     {   
-        if (playerInventory.inventoryCount > 20) // if inventory is full
+        if (inventoryUI.inventoryCount > 20) // if inventory is full
         {
-            if (playerInventory.stackedLoot.ContainsKey(lootToBeAdded.name)) // check if item in player inventory
+            Debug.Log(inventoryUI.inventoryCount);
+            if (inventoryUI.stackedLoot.ContainsKey(lootToBeAdded.name)) // check if item in player inventory
             {
-                playerInventory.AddLoot(lootToBeAdded); // call method from playerinv class to place into inv
+                inventoryUI.AddLoot(lootToBeAdded); // call method from playerinv class to place into inv
                 Debug.Log("destory 1");
                 Destroy(lootToBeAdded); // delete loot after collecting 
             }
@@ -74,12 +74,12 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
         else
         {
-            playerInventory.AddLoot(lootToBeAdded); // call method from playerinv class to place into inv
+            inventoryUI.AddLoot(lootToBeAdded); // call method from playerinv class to place into inv
             if (ObtainDefinitions.Instance.isStackable[lootToBeAdded.name]) // only destory item is is stackable and is already in inventory
             {
-                if (playerInventory.stackedLoot[lootToBeAdded.name] > 2) // needs to have atleast one in the world before deleting
+                if (inventoryUI.stackedLoot[lootToBeAdded.name] > 2) // needs to have atleast one in the world before deleting
                 {
-                    Debug.Log("destory 2"+ playerInventory.stackedLoot[lootToBeAdded.name]);
+                    Debug.Log("destory 2"+ inventoryUI.stackedLoot[lootToBeAdded.name]);
                     Destroy(lootToBeAdded); 
                 }
                 else

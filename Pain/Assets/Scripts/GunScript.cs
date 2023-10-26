@@ -129,6 +129,5 @@ public class GunScript : MonoBehaviour
             localScale.y = 1f;
         }
         transform.localScale = localScale; // finalises the flip
-
     }
 }

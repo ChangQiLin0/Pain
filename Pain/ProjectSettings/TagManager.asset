@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - EnemyBullet
   - Loot
+  - InvUI
   layers:
   - Default
   - TransparentFX

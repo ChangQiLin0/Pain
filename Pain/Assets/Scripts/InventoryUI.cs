@@ -8,11 +8,13 @@ using UnityEngine.UI;
 public class InventoryUI : MonoBehaviour
 {
     private Transform invParent; // holds inventory parent position 
-    private PlayerInventory playerInventory;
+    public Dictionary<string, int> stackedLoot = new Dictionary<string, int>(); // holds all items that have been stacked + number
+    public int inventoryCount; // used to check if inventory is full or not/ number of items in inv
+    public bool fullInventory;
+
     public void Awake()
     {
         invParent = transform.Find("Inventory"); // gets inventory main parent
-        playerInventory = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerInventory>();
     }
 
     public void UpdateAddInv(GameObject objectToAdd)
@@ -48,6 +50,38 @@ public class InventoryUI : MonoBehaviour
                 foundEmpty = true; // stop while loop to as object has been insantiated
             }
             i ++; // add one to counter 
+        }
+    }
+
+    public void AddLoot(GameObject loot)
+    {
+        loot.name = loot.name.Replace("(Clone)", "").Trim();
+        if (ObtainDefinitions.Instance.isStackable[loot.name]) // check if is stackable 
+        {
+            if (stackedLoot.ContainsKey(loot.name)) // check if is in inv and stacked
+            {
+                if (stackedLoot[loot.name] > 0)
+                {
+                    stackedLoot[loot.name] ++; // add to dictionary count 
+                }
+                else
+                {
+                    inventoryCount ++; // add 1 to overall inv count
+                    stackedLoot[loot.name] = 1; // append to dictionary and set number to 1
+                    UpdateAddInv(loot); // update inventory UI
+                }
+            }
+            else
+            {
+                inventoryCount ++; // add 1 to overall inv count
+                stackedLoot[loot.name] = 1; // append to dictionary and set number to 1
+                UpdateAddInv(loot); // update inventory UI
+            }
+        }
+        else
+        {
+            inventoryCount ++; // add 1 to overall inv count
+            UpdateAddInv(loot); //update inventory UI 
         }
     }
 }

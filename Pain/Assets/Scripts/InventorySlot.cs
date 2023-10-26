@@ -11,14 +11,14 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     public LayoutElement layoutElement;
     private int characterWrapLimit = 50;
     private GameObject player;
-    private PlayerInventory playerInventory;
+    private InventoryUI inventoryUI;
     private bool canDrop;
     private GameObject selectedObject;
 
-    private void Awake()
+    private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player"); // get player object
-        playerInventory = player.GetComponent<PlayerInventory>(); // get player inventory component
+        inventoryUI = ObtainDefinitions.Instance.InventoryUI;
     }
     private void Update()
     {
@@ -50,11 +50,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                 Debug.Log("dropped onto slot");
                 if (transform.name != "ItemSlot")
                 {
-                    playerInventory.inventoryCount --; // subtract 1 from inv counter
+                    inventoryUI.inventoryCount --; // subtract 1 from inv counter
                 }
                 else if (originalParent.name != "ItemSlot")
                 {
-                    playerInventory.inventoryCount ++; // add 1 to inv counter
+                    inventoryUI.inventoryCount ++; // add 1 to inv counter
                 }
 
                 lootComponent.lootParent = transform; // set parent current slot
@@ -99,25 +99,26 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         if (transform.name == "ItemSlot" && transform.childCount == 2 && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed)
         {
             Instantiate(selectedObject, player.transform.position, Quaternion.identity); // instantiate object into world at player position
-            if (playerInventory.stackedLoot.ContainsKey(selectedObject.name))
+            if (inventoryUI.stackedLoot.ContainsKey(selectedObject.name))
             {   
-                if (playerInventory.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
+                if (inventoryUI.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
                 {
-                    playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
-                    playerInventory.inventoryCount --; // minus 1 from inventory count
+                    inventoryUI.stackedLoot[selectedObject.name] --; // subtract from stack
+                    inventoryUI.inventoryCount --; // minus 1 from inventory count
+                    inventoryUI.stackedLoot.Remove(selectedObject.name);
                     OnPointerExit(null); // call onpointerexit to hide tooltip
                     Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
                 }
                 else
                 {
-                    playerInventory.stackedLoot[selectedObject.name] --; // subtract from stack
+                    inventoryUI.stackedLoot[selectedObject.name] --; // subtract from stack
                 }
             }
             else
             {
                 OnPointerExit(null); // call onpointerexit to hide tooltip
                 Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
-                playerInventory.inventoryCount --; // minus 1 from inventory count
+                inventoryUI.inventoryCount --; // minus 1 from inventory count
             }
         }
     }
@@ -190,13 +191,13 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "0"; // set to 0 as there are no items
         }
 
-        if (playerInventory.stackedLoot.ContainsKey(transform.GetChild(0).name)) // if child is a stackable object
+        if (inventoryUI.stackedLoot.ContainsKey(transform.GetChild(0).name)) // if child is a stackable object
         {
-            updatedSlotValue = playerInventory.stackedLoot[transform.GetChild(0).name]; // get to be update stack size
+            updatedSlotValue = inventoryUI.stackedLoot[transform.GetChild(0).name]; // get to be update stack size
             inventorySlotValue = transform.GetChild(1).GetComponent<TextMeshProUGUI>().text; // get text for current stack size
         }
 
-        if (transform.childCount == 2 && !playerInventory.stackedLoot.ContainsKey(transform.GetChild(0).name)) // if child isnt a stackable object
+        if (transform.childCount == 2 && !inventoryUI.stackedLoot.ContainsKey(transform.GetChild(0).name)) // if child isnt a stackable object
         {
             updatedSlotValue = 1; // stack size must be 1 as it is not stackable
             inventorySlotValue = transform.GetChild(1).GetComponent<TextMeshProUGUI>().text; // get text for stack size

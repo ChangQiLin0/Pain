@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -26,21 +27,20 @@ public class Player : MonoBehaviour
     public float defenceMultiplier = 1; // lower = better
     public int leechChance = 0; // chance to leech health from enemy 0-100
     public int leechPercent = 0; // percentage of health leeched 0-100
-    private PlayerInventory playerInventory;
+    public float regenRate = 0f; // nature regeneration of hp for player
      
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // get component from player
         playerAnimation = GetComponent<Animator>(); // get animation
         curHealth = maxHealth; // initiates the player character
-
-        playerInventory = GetComponent<PlayerInventory>(); // create new inventory instance
     }
 
     private void FixedUpdate()
     {
         HandleInputs();
         Animation();
+        HealthRegen();
     }
 
     private void HandleInputs()
@@ -112,6 +112,14 @@ public class Player : MonoBehaviour
             skillPoints += Random.Range(1,4);; // add between 1-3 skill points
             nextReqExp = 25 * Mathf.Pow(1.2f, playerLevel); // 25 x 1.2^playerLevel
             Debug.Log(playerLevel + " req: "+ nextReqExp);
+        }
+    }
+
+    public void HealthRegen()
+    {
+        if (regenRate > 0 && curHealth < maxHealth) // if regen is greater than 0 and curhealth is less than max health
+        {
+            Heal(regenRate * Time.fixedDeltaTime);
         }
     }
 }

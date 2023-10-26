@@ -9,6 +9,7 @@ public class ObtainDefinitions : MonoBehaviour
 {
     // store all dictionary/sprites required 
     private Player player;
+    public InventoryUI InventoryUI;
     public static ObtainDefinitions Instance { get; private set; }
     public delegate string StringAction(string functionType, GameObject gameObject); // defines delegate that is a function that takes in a string as a parameter
     
