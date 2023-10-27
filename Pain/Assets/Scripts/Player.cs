@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         HandleInputs();
-        Animation();
+        PlayerAnimation();
         HealthRegen();
     }
 
@@ -57,9 +57,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Animation()
+    private void PlayerAnimation()
     {
-        if (moveVector.x == 0)
+        if (moveVector.normalized == new Vector2(0,0)) // if move vector = 0, player is not moving
         {
             playerAnimation.SetBool("walking", false);
         }
@@ -67,7 +67,6 @@ public class Player : MonoBehaviour
         {
             playerAnimation.SetBool("walking", true);
         }
-           
     }
 
     public void TakeDamage(float damageAmount)

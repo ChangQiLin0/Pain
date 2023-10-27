@@ -10790,7 +10790,7 @@ GameObject:
   - component: {fileID: 2103689171196864341}
   - component: {fileID: 4729467990818598361}
   m_Layer: 0
-  m_Name: RoomTemplate
+  m_Name: LRUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

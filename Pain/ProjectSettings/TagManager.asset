@@ -9,6 +9,7 @@ TagManager:
   - EnemyBullet
   - Loot
   - InvUI
+  - PlayerDetector
   layers:
   - Default
   - TransparentFX
@@ -20,7 +21,7 @@ TagManager:
   - PlayerBullet
   - EnemyBullet
   - Enemy
-  - 
+  - PlayerDetector
   - 
   - 
   - 

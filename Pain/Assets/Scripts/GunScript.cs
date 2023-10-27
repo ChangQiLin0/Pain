@@ -17,7 +17,7 @@ public class GunScript : MonoBehaviour
     public float totalDamage; // total damage (base+playerbonus) * multi, public - accessed by enemy 
     public float baseDamage; // default damage of gun
     private float playerDamage; // any damage bonus/stat increase to player
-    private float playerDamageMulti; // same as ^. Can be lower than 1 but not 0
+    private float playerDamageMulti; // same as above. Can be lower than 1 but not 0
 
     private float totalAmmo; // total ammo player has (base+playerbonus)
     public float baseAmmo; // default ammo of gun
@@ -46,9 +46,13 @@ public class GunScript : MonoBehaviour
     void FixedUpdate()
     {
         GetValues();
-        if (gameObject.CompareTag("Loot"))
+        if (!isSelected)
         {
-            gunObject.GetComponent<SpriteRenderer>().sortingOrder = 4; // subtract 1 from sorting layer so it always shows under the player 
+            gunObject.GetComponent<SpriteRenderer>().sortingOrder = -3; // subtract 1 from sorting layer so it always shows under the player 
+        }
+        else
+        {
+            gunObject.GetComponent<SpriteRenderer>().sortingOrder = 5;
         }
         if (isSelected)
         {

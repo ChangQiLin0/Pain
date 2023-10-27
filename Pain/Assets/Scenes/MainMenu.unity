@@ -1282,12 +1282,12 @@ PrefabInstance:
     - target: {fileID: 4794944907271097335, guid: bd9d46bcad090e04cabaf637ba78f7f7,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.452443
+      value: 5.42
       objectReference: {fileID: 0}
     - target: {fileID: 4794944907271097335, guid: bd9d46bcad090e04cabaf637ba78f7f7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.23941694
+      value: 19.42
       objectReference: {fileID: 0}
     - target: {fileID: 4794944907271097335, guid: bd9d46bcad090e04cabaf637ba78f7f7,
         type: 3}
@@ -5679,7 +5679,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.14, y: 12.92, z: -10}
+  m_LocalPosition: {x: 117, y: 117, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6807,7 +6807,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 644121543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.81, y: 0.83099246, z: -1.2044911}
+  m_LocalPosition: {x: 8.36, y: 16.59, z: -1.2044911}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10249,11 +10249,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1063323147}
+  - component: {fileID: 1063323151}
   - component: {fileID: 1063323146}
   - component: {fileID: 1063323145}
   - component: {fileID: 1063323149}
   - component: {fileID: 1063323150}
-  - component: {fileID: 1063323151}
   m_Layer: 0
   m_Name: Tilemap
   m_TagString: Untagged
@@ -10421,6 +10421,36 @@ MonoBehaviour:
   tilemap: {fileID: 1063323146}
   tilePrefab: {fileID: 4729467990818598362, guid: 3a42c963cd5dd5445ba6e327decb5503,
     type: 3}
+  openDoorTiles:
+  - {fileID: 11400000, guid: 06983738c890a0849af316fdd834f5d4, type: 2}
+  - {fileID: 11400000, guid: b14e4540dfac5ba46ba1f7cc1b64c955, type: 2}
+  - {fileID: 11400000, guid: 9bd82516aa2793049a71fe53d81e1ddd, type: 2}
+  - {fileID: 11400000, guid: 1b581bede58c2b245884b48d3b3ee75b, type: 2}
+  - {fileID: 11400000, guid: 28c514d9bcef51a45872277d2ee09cb3, type: 2}
+  - {fileID: 11400000, guid: 9a0295810bbe2aa4e9d39909bb5f86dc, type: 2}
+  - {fileID: 11400000, guid: 669da909cc5bb514695d3a7a1488682c, type: 2}
+  - {fileID: 11400000, guid: a8a712e66614cc84a8d09de5558ba114, type: 2}
+  closedDoorTiles:
+  - {fileID: 11400000, guid: 3488a18717ab0694aa378cee91642b91, type: 2}
+  - {fileID: 11400000, guid: a8203fda3a14d9a4f8972723b3ac786a, type: 2}
+  - {fileID: 11400000, guid: 50b3e0ae600fec8438f8ea50700833d2, type: 2}
+  - {fileID: 11400000, guid: 3e9f34793d1da4448bf30f34da70fd59, type: 2}
+  - {fileID: 11400000, guid: 10ecef4c00765ca42a3e823c06a96652, type: 2}
+  - {fileID: 11400000, guid: b3f1e1b7af5311443a808b80c9e06610, type: 2}
+  - {fileID: 11400000, guid: c2ef7f6ecfcf47d41817c69246d5d038, type: 2}
+  - {fileID: 11400000, guid: e8c401f9678140140a7b2167f3317464, type: 2}
+  roomsRequired: 0
+  roomsSpawned: 0
+  hasUnconnectedRooms: 0
+  spawnRooms: []
+  roomL:
+  - {fileID: 4729467990818598362, guid: 7d3911b551390b64ca9b835fc1184f52, type: 3}
+  roomR:
+  - {fileID: 4729467990818598362, guid: f0819ecfc463b5d4593557385e2096cb, type: 3}
+  roomU:
+  - {fileID: 4729467990818598362, guid: f0819ecfc463b5d4593557385e2096cb, type: 3}
+  roomD:
+  - {fileID: 4729467990818598362, guid: bb10651627a78d94eb9deb6f6b106f92, type: 3}
 --- !u!1 &1064525695
 GameObject:
   m_ObjectHideFlags: 0
@@ -14392,7 +14422,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1511656623}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.14, y: 12.92, z: 0}
+  m_LocalPosition: {x: 117, y: 117, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -16557,7 +16587,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1807793896
 Transform:
   m_ObjectHideFlags: 0
@@ -20068,7 +20098,7 @@ PrefabInstance:
     - target: {fileID: 7439339697290829209, guid: f263fb0e219cbd14ab84443779fcb473,
         type: 3}
       propertyPath: baseDamage
-      value: 100
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7439339697290829209, guid: f263fb0e219cbd14ab84443779fcb473,
         type: 3}
