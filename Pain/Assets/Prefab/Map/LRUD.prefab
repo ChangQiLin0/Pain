@@ -10791,7 +10791,7 @@ GameObject:
   - component: {fileID: 4729467990818598361}
   m_Layer: 0
   m_Name: LRUD
-  m_TagString: Untagged
+  m_TagString: Room
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10828,7 +10828,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doorDirections: LRUD
-  gridPos: {x: 0, y: 0}
+  gridPos: {x: 0, y: 0, z: 0}
+  enemyCount: 0
 --- !u!156049354 &4729467990818598361
 Grid:
   m_ObjectHideFlags: 0

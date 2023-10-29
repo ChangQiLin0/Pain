@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -22,6 +23,7 @@ public class DungeonManager : MonoBehaviour
 
 
     public string[,] occupiedGrid = new string[15,15]; // 2D array -21x21 grid which shows which cells have a room/type of room e.g. LR (left+right doors)
+    public GameObject[,] occupiedGridGameObject = new GameObject[15,15]; // store gameobject of what room is there 
     // if contains "Req" + "L/R/U/D" it means its requires that
 
     public void Start()
@@ -39,8 +41,10 @@ public class DungeonManager : MonoBehaviour
         occupiedGrid[8,8] = "LRUD"; // indicate new spawned room has doors facing in all directions
         occupiedGrid[7,8] = "roomR";
         occupiedGrid[9,8] = "roomL";
-        occupiedGrid[11,7] = "roomU";
-        occupiedGrid[11,9] = "roomD";
+        occupiedGrid[8,7] = "roomU";
+        occupiedGrid[8,9] = "roomD";
+
+        occupiedGridGameObject[8,8] = transform.gameObject;
 
 
         room.transform.SetParent(tilemap.transform);

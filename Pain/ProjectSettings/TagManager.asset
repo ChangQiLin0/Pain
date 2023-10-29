@@ -10,6 +10,7 @@ TagManager:
   - Loot
   - InvUI
   - PlayerDetector
+  - Room
   layers:
   - Default
   - TransparentFX

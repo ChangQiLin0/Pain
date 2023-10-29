@@ -8055,7 +8055,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 5
-      m_TileSpriteIndex: 4
+      m_TileSpriteIndex: 5
       m_TileMatrixIndex: 0
       m_TileColorIndex: 4
       m_TileObjectToInstantiateIndex: 65535
@@ -8065,7 +8065,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 4
-      m_TileSpriteIndex: 3
+      m_TileSpriteIndex: 4
       m_TileMatrixIndex: 0
       m_TileColorIndex: 4
       m_TileObjectToInstantiateIndex: 65535
@@ -8705,7 +8705,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileSpriteIndex: 3
       m_TileMatrixIndex: 0
       m_TileColorIndex: 4
       m_TileObjectToInstantiateIndex: 65535
@@ -9540,16 +9540,16 @@ Tilemap:
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
-    m_Data: {fileID: -2064982375, guid: b9d48469d9b2cfe4cbd5c9b5026080ab, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: -2064982375, guid: b9d48469d9b2cfe4cbd5c9b5026080ab, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -1346699695, guid: 92ddeabfaf3d2f8419d85dfa2ae816f8, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -1607819131, guid: 92ddeabfaf3d2f8419d85dfa2ae816f8, type: 3}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
   - m_RefCount: 2
     m_Data: {fileID: -1789083305, guid: eb6c4015815f9214cb4623f74a286dcd, type: 3}
   - m_RefCount: 4
@@ -10881,7 +10881,7 @@ GameObject:
   - component: {fileID: 4729467990818598361}
   m_Layer: 0
   m_Name: RUD
-  m_TagString: Untagged
+  m_TagString: Room
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10919,6 +10919,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   doorDirections: RUD
   gridPos: {x: 0, y: 0, z: 0}
+  enemyCount: 0
 --- !u!156049354 &4729467990818598361
 Grid:
   m_ObjectHideFlags: 0

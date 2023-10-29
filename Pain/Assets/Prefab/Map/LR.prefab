@@ -8705,7 +8705,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 2
-      m_TileSpriteIndex: 5
+      m_TileSpriteIndex: 14
       m_TileMatrixIndex: 0
       m_TileColorIndex: 4
       m_TileObjectToInstantiateIndex: 65535
@@ -8715,7 +8715,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 3
-      m_TileSpriteIndex: 2
+      m_TileSpriteIndex: 13
       m_TileMatrixIndex: 0
       m_TileColorIndex: 4
       m_TileObjectToInstantiateIndex: 65535
@@ -8725,7 +8725,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 1
-      m_TileSpriteIndex: 1
+      m_TileSpriteIndex: 12
       m_TileMatrixIndex: 0
       m_TileColorIndex: 4
       m_TileObjectToInstantiateIndex: 65535
@@ -9350,16 +9350,16 @@ Tilemap:
   m_TileSpriteArray:
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
-    m_Data: {fileID: -2064982375, guid: b9d48469d9b2cfe4cbd5c9b5026080ab, type: 3}
-  - m_RefCount: 1
-    m_Data: {fileID: -1776794276, guid: b9d48469d9b2cfe4cbd5c9b5026080ab, type: 3}
   - m_RefCount: 0
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
-    m_Data: {fileID: -43448154, guid: eb6c4015815f9214cb4623f74a286dcd, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 2
     m_Data: {fileID: -1789083305, guid: eb6c4015815f9214cb4623f74a286dcd, type: 3}
   - m_RefCount: 0
@@ -9372,12 +9372,12 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: -2064982375, guid: b9d48469d9b2cfe4cbd5c9b5026080ab, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: -1776794276, guid: b9d48469d9b2cfe4cbd5c9b5026080ab, type: 3}
+  - m_RefCount: 1
+    m_Data: {fileID: -43448154, guid: eb6c4015815f9214cb4623f74a286dcd, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 980057627, guid: eb6c4015815f9214cb4623f74a286dcd, type: 3}
   - m_RefCount: 1
@@ -10851,7 +10851,7 @@ GameObject:
   - component: {fileID: 4729467990818598361}
   m_Layer: 0
   m_Name: LR
-  m_TagString: Untagged
+  m_TagString: Room
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10889,6 +10889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   doorDirections: LR
   gridPos: {x: 0, y: 0, z: 0}
+  enemyCount: 0
 --- !u!156049354 &4729467990818598361
 Grid:
   m_ObjectHideFlags: 0
