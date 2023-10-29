@@ -141,64 +141,58 @@ public class DungeonRoom : MonoBehaviour
     private bool CorrectRoom(Vector3Int pos, string doorDirections)
     {
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
-        bool returnBool = false;
+        int totalPasses = 0;
+        int validPasses = 0;
         foreach (char letter in doorDirections)
         {
             if (doorDirections.Contains("L"))
             {
                 if (dungeonManager.occupiedGrid[pos.x -1, pos.y] == null || dungeonManager.occupiedGrid[pos.x -1, pos.y].Contains("R")) // if cell is empty or has path pointing back
                 {
-                    returnBool = true;
+                    validPasses += 1;
                 }
-                else
-                {
-                    returnBool = false;
-                }
+                totalPasses += 1;
             }
             if (doorDirections.Contains("R"))
             {
                 if (dungeonManager.occupiedGrid[pos.x +1, pos.y] == null || dungeonManager.occupiedGrid[pos.x +1, pos.y].Contains("L")) // if cell is empty or has path pointing back
                 {
-                    returnBool = true;
+                    validPasses += 1;
                 }
-                else
-                {
-                    returnBool = false;
-                }
+                totalPasses += 1;
             }
             if (doorDirections.Contains("U"))
             {
                 if (dungeonManager.occupiedGrid[pos.x, pos.y +1] == null || dungeonManager.occupiedGrid[pos.x, pos.y +1].Contains("D")) // if cell is empty or has path pointing back
                 {
-                    returnBool = true;
+                    validPasses += 1;
                 }
-                else
-                {
-                    returnBool = false;
-                }
+                totalPasses += 1;
             }
             if (doorDirections.Contains("D"))
             {
                 if (dungeonManager.occupiedGrid[pos.x, pos.y -1] == null || dungeonManager.occupiedGrid[pos.x, pos.y -1].Contains("U")) // if cell is empty or has path pointing back
                 {
-                    returnBool = true;
+                    validPasses += 1;
                 }
-                else
-                {
-                    returnBool = false;
-                }
+                totalPasses += 1;
             }
         }
-        return returnBool;
+        if (totalPasses == validPasses)
+        {
+            return true;
+        }
+        return false;
     }
 
     public void InstantiateRoom(Vector3Int newGridPos, string requiredDirections)
     {
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
-        if (dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y] != null && dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y].Contains("room"))
+        if (dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y] == null || dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y].Contains("room"))
         {
             bool validRoom = false;
-            while (!validRoom)
+            int iterationCounter = 0;
+            while (!validRoom && iterationCounter <= 50)
             {
                 int validCounter = 0; // always set validcounter to 0 on each iteration
                 GameObject potentialRoom = dungeonManager.rooms[Random.Range(0, dungeonManager.rooms.Length)]; // get and store potential room 
@@ -215,7 +209,6 @@ public class DungeonRoom : MonoBehaviour
                     room.transform.parent = dungeonManager.transform; // set parent
                     dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y] = room.GetComponent<DungeonRoom>().doorDirections; // replace previous data with door direction data e.g. "RLD"
                     UpdateOccupiedGrid(newGridPos, room);
-            
                     if (room.GetComponent<DungeonRoom>().doorDirections.Length > 1)
                     {
                         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
@@ -223,6 +216,15 @@ public class DungeonRoom : MonoBehaviour
                     }
                     validRoom = true;
                 }
+                iterationCounter ++;
+            }
+
+            if (!validRoom)
+            {
+                Debug.Log("brick spawned");
+                GameObject brick = Instantiate(dungeonManager.bricks[0], new Vector3Int(newGridPos.x*26, newGridPos.y*26, 0), Quaternion.identity);
+                brick.transform.parent = dungeonManager.transform;
+                UpdateOccupiedGrid(newGridPos, brick);
             }
         }
     }

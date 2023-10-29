@@ -18,6 +18,7 @@ public class DungeonManager : MonoBehaviour
 
     public GameObject[] spawnRooms; // store all rooms which are spawn rooms
     public GameObject[] rooms; // store all room prefabs
+    public GameObject[] bricks;
 
 
     public string[,] occupiedGrid = new string[15,15]; // 2D array -21x21 grid which shows which cells have a room/type of room e.g. LR (left+right doors)

@@ -10441,7 +10441,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e8c401f9678140140a7b2167f3317464, type: 2}
   roomsRequired: 0
   roomsSpawned: 0
-  hasUnconnectedRooms: 0
   spawnRooms: []
   rooms:
   - {fileID: 4729467990818598362, guid: bb10651627a78d94eb9deb6f6b106f92, type: 3}
@@ -10459,6 +10458,8 @@ MonoBehaviour:
   - {fileID: 4729467990818598362, guid: 22048895371b94c44ad09865ae4d050a, type: 3}
   - {fileID: 4729467990818598362, guid: da691aa7b9907a74c87c46b863fa39bc, type: 3}
   - {fileID: 4729467990818598362, guid: 25769153039ce964a9187a6249af48fa, type: 3}
+  bricks:
+  - {fileID: 4729467990818598362, guid: ccf5238a43912404aa4d09b2561c8fe8, type: 3}
 --- !u!1 &1064525695
 GameObject:
   m_ObjectHideFlags: 0
