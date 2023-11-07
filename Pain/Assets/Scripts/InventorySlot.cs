@@ -78,7 +78,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         if (transform.childCount == 2) // only pass if child exists
         {
             layoutElement.gameObject.SetActive(true); // set object to visible
-            TooltipContent(eventData);
+            TooltipContent();
 
             canDrop = true; // bool set to true when able to drop item
             selectedObject = transform.GetChild(0).gameObject; // set to child object of inventory slot 
@@ -123,7 +123,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         }
     }
 
-    private void TooltipContent(PointerEventData eventData)
+    private void TooltipContent()
     {
         GameObject getGameObject = transform.GetChild(0).gameObject; // get child component as a gameobject
         CollectibleLoot collectibleComponent = getGameObject.GetComponent<CollectibleLoot>();
@@ -163,10 +163,11 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     private void TooltipUpdate()
     {
         RectTransform tooltipRect = layoutElement.gameObject.transform.GetComponent<RectTransform>(); // get tooltip container
-        Vector2 mousePos = Input.mousePosition; // divide mouse pos by canvas size 
+        Vector2 mousePos = Input.mousePosition; // get mouse position
+        tooltipRect.position = mousePos; // set tooltips location to where mouse is
+
         float tooltipHeight = tooltipRect.sizeDelta.y; // get height of tooltip box 
         tooltipRect.position = mousePos; // set tooltip rec to mouse pos
-        
         
         if (mousePos.y - tooltipHeight/1.5 < 0) // check if bottom of tooltip is within the screen or not
         {

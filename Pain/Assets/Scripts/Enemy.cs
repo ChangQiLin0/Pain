@@ -147,6 +147,7 @@ public class Enemy : MonoBehaviour
     }
     public void Die()
     {
+        transform.parent.GetComponent<DungeonRoom>().enemyCount -= 1; // decrease enemy count by 1 since enemy is dead
         GetComponent<LootTable>().GetDroppedLoot(); // check if enemy is lootable/has LootTable script
         Destroy(gameObject); // remove enemy from existence
     }

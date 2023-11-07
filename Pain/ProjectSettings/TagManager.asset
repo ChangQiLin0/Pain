@@ -11,6 +11,7 @@ TagManager:
   - InvUI
   - PlayerDetector
   - Room
+  - SpawnContainer
   layers:
   - Default
   - TransparentFX

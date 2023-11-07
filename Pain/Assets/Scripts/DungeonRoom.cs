@@ -10,17 +10,14 @@ using UnityEngine.Tilemaps;
 public class DungeonRoom : MonoBehaviour
 {
     public string doorDirections; // LRUD (Left, Right, Up, Down)
-    public Vector3Int gridPos; // store grid pos relative to occupied grid
-    private Tile[] closedDoorTiles;
+    public Vector3Int gridPos; // store grid pos relative to occupied grid in dungeonManager script
+    private Tile[] closedDoorTiles; // store all closed door tiles
     private Tile[] openDoorTiles; // store all open door tiles
     private DungeonManager dungeonManager;
-    public GameObject leftRoom;
-    public GameObject rightRoom;
-    public GameObject upRoom;
-    public GameObject downRoom;
 
-    public bool spawnedEnemies = false; // if false close all doors behind and spawn some enemies 
-    public int enemyCount = 0;
+    public bool spawnedEnemies = false; // if room is passive, set true by default in inspector
+    public int enemyCount = 0; // number of enemies remaining 
+    public bool closeDoors = false;
 
 
     private void Start()
@@ -28,6 +25,11 @@ public class DungeonRoom : MonoBehaviour
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get dungeonmanager script from parent
         openDoorTiles = dungeonManager.openDoorTiles; // get tile asset
         closedDoorTiles = dungeonManager.closedDoorTiles; // get tile asset
+    }
+
+    private void Update()
+    {
+        RoomCleared();
     }
 
     public void OpenDoors(string openDirection) // openCommand = "U" / "D" up/down
@@ -53,7 +55,6 @@ public class DungeonRoom : MonoBehaviour
                 belowLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y, 0), openDoorTiles[1]); // instantiate top left open door tile
                 aboveLayer.SetTile(new Vector3Int(bounds1.x, bounds1.y - 1, 0), openDoorTiles[2]); // bottom left
                 aboveLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), openDoorTiles[3]); // bottom right
-                Debug.Log("all door peices removed -above");
             }
             if (closedDoorTiles[0] == belowTile && openDirection.Contains("D")) // if below tile is top left closed door tile
             {
@@ -63,7 +64,6 @@ public class DungeonRoom : MonoBehaviour
                 aboveLayer.SetTile(new Vector3Int(bounds1.x, bounds1.y - 1, 0), openDoorTiles[2]);
                 belowLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), null); // bottom right
                 aboveLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), openDoorTiles[3]); // bottom right
-                Debug.Log("all door peices removed -below");
             }
             bounds2.x += 1; // increment x position by 1 (move up)
             TileBase aboveTile2 = aboveLayer.GetTile(bounds2); // retrives tile at pos in above layer
@@ -71,81 +71,61 @@ public class DungeonRoom : MonoBehaviour
             {
                 aboveLayer.SetTile(bounds2, openDoorTiles[4]); // replace closed door tile with open door tile
                 aboveLayer.SetTile(new Vector3Int(bounds2.x, bounds2.y - 1, 0), openDoorTiles[5]); // bottom tile
-                Debug.Log("all door peices removed -left");
             }
             if (closedDoorTiles[6] == aboveTile2 && openDirection.Contains("R"))
             {
                 aboveLayer.SetTile(bounds2, openDoorTiles[6]); // remove top tile
                 aboveLayer.SetTile(new Vector3Int(bounds2.x, bounds2.y - 1, 0), openDoorTiles[7]); // bottom tile
-                Debug.Log("all door peices removed -right");
             }
         }
     }
 
-    // public void CloseVerticalDoors(string openDirection) // openCommand = "U" / "D" up/down
-    // {
-    //     Tilemap aboveLayer = transform.GetChild(1).GetComponent<Tilemap>(); // get CollisionAbove child 
-    //     Tilemap belowLayer = transform.GetChild(2).GetComponent<Tilemap>(); // get CollisionBelow child 
-
-    //     BoundsInt bounds = aboveLayer.cellBounds; // gets 26x26 areas coordinates, min and max coords
-    //     Vector3Int boundsMin = bounds.min; // get min point of bounds (bottom left)
-    //     boundsMin.x += 12;
-    //     for (int i = 0; i < 26; i ++) // loops from 0 to 25 inclusive
-    //     {
-    //         boundsMin.y += 1;
-    //         TileBase aboveTile = aboveLayer.GetTile(boundsMin);
-    //         TileBase belowTile = belowLayer.GetTile(boundsMin); 
-    //         if (openDoorTiles[0] == aboveTile && openDirection.Contains("U"))
-    //         {
-    //             aboveLayer.SetTile(boundsMin, null); // remove top left
-    //             aboveLayer.SetTile(new Vector3Int(boundsMin.x, boundsMin.y - 1, 0), null);
-    //             aboveLayer.SetTile(new Vector3Int(boundsMin.x + 1, boundsMin.y, 0), null); 
-    //             aboveLayer.SetTile(new Vector3Int(boundsMin.x + 1, boundsMin.y -1, 0), null);
-    //             Debug.Log("all door peices removed -above");
-    //         }
-    //         if (openDoorTiles[0] == belowTile && openDirection.Contains("D")) 
-    //         {
-    //             belowLayer.SetTile(boundsMin, null); 
-    //             belowLayer.SetTile(new Vector3Int(boundsMin.x, boundsMin.y - 1, 0), null);
-    //             belowLayer.SetTile(new Vector3Int(boundsMin.x + 1, boundsMin.y, 0), null);
-    //             belowLayer.SetTile(new Vector3Int(boundsMin.x + 1, boundsMin.y -1, 0), null); 
-    //             Debug.Log("all door peices removed -below");
-    //         }
-    //     }
-    // }
-
-    // public void CloseHorizontalDoors(string openDirection) // openCommand = "L" / "R" left/right
-    // {
-    //     Tilemap aboveLayer = transform.GetChild(1).GetComponent<Tilemap>(); // get CollisionAbove child 
-    //     BoundsInt bounds = aboveLayer.cellBounds; // gets 26x26 areas coordinates, min and max coords
-    //     Vector3Int boundsMin = bounds.min; // get min point of bounds (bottom left)
-    //     boundsMin.y += 13;
-
-    //     for (int i = 0; i < 26; i ++) // loops from 0 to 25 inclusive
-    //     {
-    //         boundsMin.x += 1; // increment x position by 1 (move up)
-    //         TileBase aboveTile = aboveLayer.GetTile(boundsMin); // retrives tile at pos in above layer
-    //         if (closedDoorTiles[4] == aboveTile && openDirection.Contains("L")) // if above tile is top left closed door tile
-    //         {
-    //             aboveLayer.SetTile(boundsMin, openDoorTiles[4]); // replace closed door tile with open door tile
-    //             aboveLayer.SetTile(new Vector3Int(boundsMin.x, boundsMin.y - 1, 0), openDoorTiles[5]); // bottom tile
-    //             Debug.Log("all door peices removed -left");
-    //         }
-    //         else if (closedDoorTiles[6] == aboveTile && openDirection.Contains("R"))
-    //         {
-    //             aboveLayer.SetTile(boundsMin, openDoorTiles[6]); // remove top tile
-    //             aboveLayer.SetTile(new Vector3Int(boundsMin.x, boundsMin.y - 1, 0), openDoorTiles[7]); // bottom tile
-    //             Debug.Log("all door peices removed -right");
-    //         }
-    //     }
-    // }
-
-
-
-    public void EnterRoom()
+    public void CloseDoors(string openDirection) // openCommand = "U" / "D" up/down
     {
-        Debug.Log("Entered a room");
-        // add doors behind player
+        Tilemap aboveLayer = transform.GetChild(1).GetComponent<Tilemap>(); // get CollisionAbove child 
+        Tilemap belowLayer = transform.GetChild(2).GetComponent<Tilemap>(); // get CollisionBelow child 
+
+        BoundsInt bounds = aboveLayer.cellBounds; // gets 26x26 areas coordinates, min and max coords
+        Vector3Int bounds1 = bounds.min; // get min point of bounds (bottom left)
+        Vector3Int bounds2 = bounds.min;
+        bounds1.x += 12;
+        bounds2.y += 13;
+        for (int i = 0; i < 26; i ++) // loops from 0 to 25 inclusive
+        {
+            bounds1.y += 1; // increment y position by 1 (move up)
+            TileBase aboveTile = aboveLayer.GetTile(bounds1); // retrives tile at pos in above layer
+            TileBase belowTile = belowLayer.GetTile(bounds1); // retrives tile at pos in below layer
+            if (openDoorTiles[0] == belowTile && openDirection.Contains("U")) // if above tile is top left open door tile
+            {
+                belowLayer.SetTile(bounds1, null); // set previous below tile to nothing
+                aboveLayer.SetTile(bounds1, closedDoorTiles[0]); // set new tile above that in above layer
+                belowLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y, 0), null); // set top right tile to none
+                aboveLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y, 0), closedDoorTiles[1]); // set top right with new tile
+                aboveLayer.SetTile(new Vector3Int(bounds1.x, bounds1.y - 1, 0), closedDoorTiles[2]); // replace bottom left tile with new tile
+                aboveLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), closedDoorTiles[3]); // replace bottom right tile with new tile
+            }
+            if (openDoorTiles[0] == aboveTile && openDirection.Contains("D")) // if below contains a open door tile
+            {
+                belowLayer.SetTile(bounds1, closedDoorTiles[0]); // replace top left tile
+                belowLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y, 0), closedDoorTiles[1]); // replace top right tile 
+                aboveLayer.SetTile(new Vector3Int(bounds1.x, bounds1.y - 1, 0), null); // set bottom left tile to none
+                belowLayer.SetTile(new Vector3Int(bounds1.x, bounds1.y - 1, 0), closedDoorTiles[2]); // replace with open door tile
+                aboveLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), null); //set bottom right tile to none
+                belowLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), closedDoorTiles[3]); // replace with open door tile
+            }
+            bounds2.x += 1; // increment x position by 1 (move up)
+            TileBase aboveTile2 = aboveLayer.GetTile(bounds2); 
+            if (openDoorTiles[4] == aboveTile2 && openDirection.Contains("L")) // if left contains open door tiles
+            {
+                aboveLayer.SetTile(bounds2, closedDoorTiles[4]); 
+                aboveLayer.SetTile(new Vector3Int(bounds2.x, bounds2.y - 1, 0), closedDoorTiles[5]); 
+            }
+            if (openDoorTiles[6] == aboveTile2 && openDirection.Contains("R")) // if right contains open door tiles
+            {
+                aboveLayer.SetTile(bounds2, closedDoorTiles[6]); 
+                aboveLayer.SetTile(new Vector3Int(bounds2.x, bounds2.y - 1, 0), closedDoorTiles[7]); 
+            }
+        }
     }
 
     public void UpdateOccupiedGrid(Vector3Int newGridPos, GameObject room)
@@ -381,5 +361,47 @@ public class DungeonRoom : MonoBehaviour
             }
         }
         return validDirections;
+    }
+
+    private void RoomCleared()
+    {
+        DungeonManager dungeonManagerScript = dungeonManager.GetComponent<DungeonManager>();
+        if (enemyCount == 0 && spawnedEnemies == true) // if spawned enemies are all dead 
+        {
+            OpenDoors("LRUD"); // open all doors
+            if (doorDirections.Contains("L")) // if room has a left door
+            {
+                GameObject leftRoom = dungeonManagerScript.occupiedGridGameObject[gridPos.x -1, gridPos.y]; // get room left of current room
+                if (leftRoom.TryGetComponent(out DungeonRoom leftRoomScript))
+                {
+                    leftRoomScript.OpenDoors("R"); // open right door
+                }
+            }
+            if (doorDirections.Contains("R")) // if room has a right door
+            {
+                GameObject rightRoom = dungeonManagerScript.occupiedGridGameObject[gridPos.x +1, gridPos.y]; // get room right of current room
+                if (rightRoom.TryGetComponent(out DungeonRoom rightRoomScript))
+                {
+                    rightRoomScript.OpenDoors("L"); // open left door
+                }
+            }
+            if (doorDirections.Contains("U")) // if room has a top door
+            {
+                GameObject aboveRoom = dungeonManagerScript.occupiedGridGameObject[gridPos.x, gridPos.y +1]; // get room above of current room
+                if (aboveRoom.TryGetComponent(out DungeonRoom aboveRoomScript))
+                {
+                    aboveRoomScript.OpenDoors("D"); // open bottom door
+                }
+            }
+            if (doorDirections.Contains("D")) // if room has a bottom door
+            {
+                GameObject belowRoom = dungeonManagerScript.occupiedGridGameObject[gridPos.x, gridPos.y -1]; // get room below of current room
+                if (belowRoom.TryGetComponent(out DungeonRoom belowRoomScript))
+                {
+                    belowRoomScript.OpenDoors("U"); // open top door
+                }
+            }
+            enemyCount ++;
+        }
     }
 }

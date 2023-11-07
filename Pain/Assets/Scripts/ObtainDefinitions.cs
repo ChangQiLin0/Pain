@@ -12,7 +12,6 @@ public class ObtainDefinitions : MonoBehaviour
     public InventoryUI InventoryUI;
     public static ObtainDefinitions Instance { get; private set; }
     public delegate string StringAction(string functionType, GameObject gameObject); // defines delegate that is a function that takes in a string as a parameter
-    
 
     public Dictionary<string, float> dropChance = new Dictionary<string, float> // get drop chance for each item 
     {
@@ -41,6 +40,7 @@ public class ObtainDefinitions : MonoBehaviour
     public Dictionary<string, StringAction> lootDescription = new Dictionary<string, StringAction>(); // use key to get method with pre defined parameters as modes
     public GameObject gun0;
     public GameObject testLoot0;
+    public GameObject[] enemies; // store all enemies in an array
 
     private void Awake()
     {
