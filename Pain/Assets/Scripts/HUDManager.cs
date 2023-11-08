@@ -20,6 +20,11 @@ public class HUDManager : MonoBehaviour
 
     private void Update() 
     {
+        HUDComponents();
+    }
+
+    private void HUDComponents()
+    {
         healthSlider.maxValue = player.maxHealth; // update max health
         healthSlider.value = player.curHealth; // update current health
 

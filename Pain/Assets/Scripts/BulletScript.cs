@@ -14,7 +14,6 @@ public class BulletScript : MonoBehaviour
         rb.velocity = transform.right * bulletSpeed; // bullet moves right based on the speed
     }
 
-        // if bullet collides with anything with a rigidbody bullet selfdestructs and deals damage
     private void OnCollisionEnter2D (Collision2D collision)
     {
         // checks if collision object has an enemy component so it can take damage

@@ -12,8 +12,7 @@ public class EnemyBullet : MonoBehaviour
     
     private void FixedUpdate() 
     {   
-        // bullet moves based on the speed and will be the same on all fps
-        rb.velocity = transform.right * bulletSpeed;
+        rb.velocity = transform.right * bulletSpeed; // bullet moves based on the speed and will be the same on all fps
     }
 
     private void OnCollisionEnter2D (Collision2D collision)

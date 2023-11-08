@@ -46,6 +46,19 @@ public class GunScript : MonoBehaviour
     void FixedUpdate()
     {
         GetValues();
+        SpriteLayering();
+    }
+    private void GetValues()
+    {
+        playerBulletSpread = player.GetComponent<Player>().bulletSpreadAngle; // get values from playerstat script
+        playerDamage = player.GetComponent<Player>().bonusDamage;
+        playerDamageMulti = player.GetComponent<Player>().damageMultiplier;
+
+        totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
+        totalDamage = (baseDamage + playerDamage) * playerDamageMulti; // same but damage
+    }
+    private void SpriteLayering()
+    {
         if (!isSelected)
         {
             gunObject.GetComponent<SpriteRenderer>().sortingOrder = -3; // subtract 1 from sorting layer so it always shows under the player 
@@ -61,17 +74,7 @@ public class GunScript : MonoBehaviour
             Aiming();
         }
     }
-    void GetValues()
-    {
-        playerBulletSpread = player.GetComponent<Player>().bulletSpreadAngle; // get values from playerstat script
-        playerDamage = player.GetComponent<Player>().bonusDamage;
-        playerDamageMulti = player.GetComponent<Player>().damageMultiplier;
-
-        totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
-        totalDamage = (baseDamage + playerDamage) * playerDamageMulti; // same but damage
-    }
-
-    void DetectShooting()
+    private void DetectShooting()
     {
         if (Input.GetMouseButton(0) && (Time.time > fireRateTimer) && !isReloading) // reads mouse input for left lick (0)
         {
@@ -96,7 +99,7 @@ public class GunScript : MonoBehaviour
         }
     }
 
-    void Reloading()
+    private void Reloading()
     {
         if (curAmmo <= 0 || Input.GetKeyDown(KeyCode.R)) // check if reload conditions are met
         {
@@ -116,7 +119,7 @@ public class GunScript : MonoBehaviour
         }
     }
 
-    void Aiming()
+    private void Aiming()
     {
         Vector2 dir = Input.mousePosition - Camera.main.WorldToScreenPoint(transform.position); // find direction of mouse 
         var angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg; // calculates angle and converts to degrees using mathf.rad2deg

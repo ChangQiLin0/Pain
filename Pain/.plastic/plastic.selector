@@ -1,0 +1,4 @@
+repository "Pain@Flooodin@cloud"
+  path "/"
+    br "/main"
+    co "/main"

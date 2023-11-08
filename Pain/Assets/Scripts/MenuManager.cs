@@ -23,6 +23,11 @@ public class MenuManager : MonoBehaviour
     }
     private void Update()
     {
+        OpenCloseMenu();
+        manageSkillTree();
+    }
+    private void OpenCloseMenu()
+    {
         if ((Input.GetKeyDown(KeyCode.Tab) && !isPaused) || (Input.GetKeyDown(KeyCode.Escape) && !isPaused && isInInventory)) // check if player input is equal to the tab key and prevents interference 
         {
             if (isInInventory) // close inventory
@@ -57,7 +62,6 @@ public class MenuManager : MonoBehaviour
                 isPaused = true;
             }
         }
-        manageSkillTree();
     }
 
     public void manageSkillTree()

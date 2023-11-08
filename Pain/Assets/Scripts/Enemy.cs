@@ -47,6 +47,17 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        EnemyShoot();
+    }
+
+    private void Update()
+    {
+        EnemyMovement();
+        EnemyAiming();
+    }
+
+    private void EnemyShoot()
+    {
         rb.velocity = Vector2.zero; // prevents enemies from drifting when collided 
 
         fireTimer += Time.fixedDeltaTime; 
@@ -72,11 +83,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        EnemyMovement();
-        EnemyAiming();
-    }
     private void EnemyMovement()
     {
         float distance = Vector2.Distance(transform.position, target.position); // calculated distance from player to enemy

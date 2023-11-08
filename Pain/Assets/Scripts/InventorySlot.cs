@@ -23,17 +23,20 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     private void Update()
     {
         TooltipUpdate();
-        StackValueUpdate();
-        //GunSlot();     
-        if (Input.GetKeyDown(KeyCode.Q) && canDrop && selectedObject != null)
-        {
-            dropLoot();
-        }
+        StackValueUpdate();   
+        CanDropLoot();
     } 
 
     private void OnDisable()
     {
         OnPointerExit(null); // close/hides all ui elements
+    }
+    private void CanDropLoot()
+    {
+        if (Input.GetKeyDown(KeyCode.Q) && canDrop && selectedObject != null)
+        {
+            dropLoot();
+        }
     }
 
     public void OnDrop(PointerEventData eventData) // when item has been dropped onto inv slot

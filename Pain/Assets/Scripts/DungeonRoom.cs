@@ -365,9 +365,9 @@ public class DungeonRoom : MonoBehaviour
 
     private void RoomCleared()
     {
-        DungeonManager dungeonManagerScript = dungeonManager.GetComponent<DungeonManager>();
         if (enemyCount == 0 && spawnedEnemies == true) // if spawned enemies are all dead 
         {
+            DungeonManager dungeonManagerScript = dungeonManager.GetComponent<DungeonManager>();
             OpenDoors("LRUD"); // open all doors
             if (doorDirections.Contains("L")) // if room has a left door
             {
