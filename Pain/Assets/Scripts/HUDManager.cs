@@ -30,9 +30,10 @@ public class HUDManager : MonoBehaviour
 
         expSlider.maxValue = player.nextReqExp; // update max exp value
         expSlider.value = player.totalExp; // set current exp
-
+        playerLevel.text = "Level: " + player.playerLevel.ToString(); // set player level 
+        
         coinCount.text = player.totalCoins.ToString(); // set player coin count
         skillPointCount.text = player.skillPoints.ToString(); // set player skillpoint count
-        playerLevel.text = "Level: " + player.playerLevel.ToString(); // set player level 
+        
     }
 }

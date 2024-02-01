@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
     // organise later
     [SerializeField] private Transform barrel;
     [SerializeField] private GameObject bulletPrefab;
-    public float health;
+    public float enemyHealth;
     public float enemyDamage;
     public float bulletSpeed;
     public float enemySpeed;
@@ -27,6 +27,7 @@ public class Enemy : MonoBehaviour
     public bool hasShotgun;
     private bool attackPlayer;
     private bool isMoving;
+    private bool enemyDead; // whether or not enemy is already dead, prevents enemy being double hit and dying
 
 
 
@@ -137,7 +138,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        health -= damage; // subtracts health by damage
+        enemyHealth -= damage; // subtracts health by damage
         if (player.leechChance > 0) // if leech chance is greater than 0
         {
             int rng = Random.Range(0, 101); // random number generator from 0 to 100 inclusive
@@ -146,7 +147,7 @@ public class Enemy : MonoBehaviour
                 player.Heal(damage * (player.leechPercent/100f)); // healValue = damage dealt by player / leech percent
             }
         }
-        if (health <= 0) // checks if health is below 0
+        if (enemyHealth <= 0 && !enemyDead) // checks if health is below 0
         {
             Die(); // if below zero die
         }
@@ -156,5 +157,6 @@ public class Enemy : MonoBehaviour
         transform.parent.GetComponent<DungeonRoom>().enemyCount -= 1; // decrease enemy count by 1 since enemy is dead
         GetComponent<LootTable>().GetDroppedLoot(); // check if enemy is lootable/has LootTable script
         Destroy(gameObject); // remove enemy from existence
+        enemyDead = true;
     }
 }

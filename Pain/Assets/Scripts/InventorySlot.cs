@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Data;
 public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public TextMeshProUGUI header;
@@ -25,6 +26,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         TooltipUpdate();
         StackValueUpdate();   
         CanDropLoot();
+        CanUseLoot();
     } 
 
     private void OnDisable()
@@ -35,7 +37,15 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     {
         if (Input.GetKeyDown(KeyCode.Q) && canDrop && selectedObject != null)
         {
-            dropLoot();
+            DropLoot();
+        }
+    }
+
+    private void CanUseLoot()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && selectedObject != null)
+        {
+            UseLoot();
         }
     }
 
@@ -46,25 +56,26 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         Transform originalParent = lootComponent.lootParent; // store original parent as temp variable for later use 
         Transform itemInSlot = transform.GetChild(0); // get child object
         
-        if (droppedObject != null && (transform.name == "ItemSlot" || transform.name == lootComponent.lootType)) // if dropped place is item  slot or matches loot slot
+        if (droppedObject != null && transform.name == "ItemSlot") // if dropped place is item  slot or matches loot slot
         {
             if (transform.childCount == 1) // if it has one item it means its empty
             { 
-                Debug.Log("dropped onto slot");
                 if (transform.name != "ItemSlot")
                 {
                     inventoryUI.inventoryCount --; // subtract 1 from inv counter
                 }
-                else if (originalParent.name != "ItemSlot")
+                if (droppedObject.transform.parent.name != "ItemSlot" && lootComponent.lootType == "Gun") // if dropped weapon is a gun
                 {
-                    inventoryUI.inventoryCount ++; // add 1 to inv counter
+                    if (player.transform.GetChild(0).childCount != 0) // if there already is a weapona active
+                    {
+                        Destroy(player.transform.GetChild(0).GetChild(0).gameObject); // destory exisiting weapon
+                    }
                 }
 
                 lootComponent.lootParent = transform; // set parent current slot
             }
-            else if (transform.childCount == 2 && !lootComponent.isCursed && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed) // if item/child is present and both items are not cursed
+            else if (transform.childCount == 2 && !lootComponent.isCursed && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed && lootComponent.lootParent.name == "ItemSlot") // if item/child is present and both items are not cursed
             {   
-                Debug.Log("swapping items");
                 string itemInSlotLootType = itemInSlot.GetComponent<CollectibleLoot>().lootType;
                 if (itemInSlotLootType == transform.name || itemInSlotLootType == originalParent.name || transform.name == "ItemSlot" || originalParent.name == "ItemSlot") // both items are the same loot type as inv
                 {
@@ -74,6 +85,42 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                 }
             }
         }
+        else if (droppedObject != null && transform.name == lootComponent.lootType)
+        {
+            if (transform.childCount == 1) // if it has one item it means its empty
+            {
+                if (transform.name != "ItemSlot")
+                {
+                    inventoryUI.inventoryCount --; // subtract 1 from inv counter
+                    EquiptWeapon(droppedObject);
+                }
+    
+                lootComponent.lootParent = transform; // set parent current slot
+            }
+            else if (transform.childCount == 2 && !lootComponent.isCursed && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed) // if item/child is present and both items are not cursed
+            {   
+                string itemInSlotLootType = itemInSlot.GetComponent<CollectibleLoot>().lootType;
+                if (itemInSlotLootType == transform.name || itemInSlotLootType == originalParent.name || transform.name == "ItemSlot" || originalParent.name == "ItemSlot") // both items are the same loot type as inv
+                {
+                    lootComponent.lootParent = transform; // set transform in original script so it doesnt swap back
+                    droppedObject.transform.SetParent(transform); // swap with current slot
+                    itemInSlot.SetParent(originalParent); // swap with original parent
+                    EquiptWeapon(droppedObject);
+                }
+            }
+        }
+    }
+    
+    public void EquiptWeapon(GameObject droppedObject)
+    {
+        if (player.transform.GetChild(0).childCount != 0) // if there already is a weapona active
+        {
+            Destroy(player.transform.GetChild(0).GetChild(0).gameObject); // destory exisiting weapon
+        }
+        
+        GameObject instantiatedWeapon = Instantiate(droppedObject, player.transform.GetChild(0).position, Quaternion.identity); // instantiate weapon 
+        instantiatedWeapon.transform.SetParent(player.transform.GetChild(0));
+        instantiatedWeapon.GetComponent<GunScript>().isSelected = true; // set selected to true so weapon can be used
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -97,12 +144,36 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         }
     }
 
-    private void dropLoot()
+    private void DropLoot()
     {
         if (transform.name == "ItemSlot" && transform.childCount == 2 && !transform.GetChild(0).GetComponent<CollectibleLoot>().isCursed)
         {
             Instantiate(selectedObject, player.transform.position, Quaternion.identity); // instantiate object into world at player position
-            if (inventoryUI.stackedLoot.ContainsKey(selectedObject.name))
+            SubtractStack();
+        }
+    }
+
+    private void UseLoot()
+    {
+        if (transform.name == "ItemSlot" && transform.childCount == 2 && transform.GetChild(0).GetComponent<CollectibleLoot>().canBeUsed)
+        {
+            if (transform.GetChild(0).name == "Speed Potion")
+            {
+                player.GetComponent<Player>().totalMoveSpeed += 0.5f; // increase speed by 0.5
+                if (player.GetComponent<Player>().totalMoveSpeed > 10) // check whether or not speed has surpased cap (10)
+                {
+                    player.GetComponent<Player>().totalMoveSpeed = 10f; // set player speed to 10
+                }
+            }
+            // make health, base damage, base accuracy?, base bullet quant, defence/shield  
+
+            SubtractStack();
+        }
+    }
+
+    private void SubtractStack() // reduce stack value by 1/remove from inv completely
+    {
+        if (inventoryUI.stackedLoot.ContainsKey(selectedObject.name))
             {   
                 if (inventoryUI.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
                 {
@@ -123,7 +194,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                 Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
                 inventoryUI.inventoryCount --; // minus 1 from inventory count
             }
-        }
     }
 
     private void TooltipContent()
@@ -216,7 +286,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
             transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = updatedSlotValue.ToString();
             if (updatedSlotValue > 1) // compare to check if stack value is greater than 1 
             {
-                Debug.Log(transform.GetChild(0).name);
                 transform.GetChild(1).gameObject.SetActive(true); // set to visible so values can be seen
             }
         }

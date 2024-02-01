@@ -23,8 +23,6 @@ public class DungeonRoom : MonoBehaviour
     private void Start()
     {
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get dungeonmanager script from parent
-        openDoorTiles = dungeonManager.openDoorTiles; // get tile asset
-        closedDoorTiles = dungeonManager.closedDoorTiles; // get tile asset
     }
 
     private void Update()
@@ -34,6 +32,9 @@ public class DungeonRoom : MonoBehaviour
 
     public void OpenDoors(string openDirection) // openCommand = "U" / "D" up/down
     {
+        openDoorTiles = dungeonManager.openDoorTiles; // get tile asset
+        closedDoorTiles = dungeonManager.closedDoorTiles; // get tile asset
+        
         Tilemap aboveLayer = transform.GetChild(1).GetComponent<Tilemap>(); // get CollisionAbove child 
         Tilemap belowLayer = transform.GetChild(2).GetComponent<Tilemap>(); // get CollisionBelow child 
 
@@ -47,7 +48,7 @@ public class DungeonRoom : MonoBehaviour
             bounds1.y += 1; // increment y position by 1 (move up)
             TileBase aboveTile = aboveLayer.GetTile(bounds1); // retrives tile at pos in above layer
             TileBase belowTile = belowLayer.GetTile(bounds1); // retrives tile at pos in below layer
-            if (closedDoorTiles[0] == aboveTile && openDirection.Contains("U")) // if above tile is top left closed door tile
+            if (openDirection.Contains("U") && closedDoorTiles[0] == aboveTile) // if above tile is top left closed door tile
             {
                 aboveLayer.SetTile(bounds1, null); // remove top left
                 belowLayer.SetTile(bounds1, openDoorTiles[0]); // instantiate top left open door tile
@@ -56,7 +57,7 @@ public class DungeonRoom : MonoBehaviour
                 aboveLayer.SetTile(new Vector3Int(bounds1.x, bounds1.y - 1, 0), openDoorTiles[2]); // bottom left
                 aboveLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y -1, 0), openDoorTiles[3]); // bottom right
             }
-            if (closedDoorTiles[0] == belowTile && openDirection.Contains("D")) // if below tile is top left closed door tile
+            if (openDirection.Contains("D") && closedDoorTiles[0] == belowTile) // if below tile is top left closed door tile
             {
                 belowLayer.SetTile(bounds1, openDoorTiles[0]); // replace top left with new tile
                 belowLayer.SetTile(new Vector3Int(bounds1.x + 1, bounds1.y, 0), openDoorTiles[1]); // top right
@@ -67,12 +68,12 @@ public class DungeonRoom : MonoBehaviour
             }
             bounds2.x += 1; // increment x position by 1 (move up)
             TileBase aboveTile2 = aboveLayer.GetTile(bounds2); // retrives tile at pos in above layer
-            if (closedDoorTiles[4] == aboveTile2 && openDirection.Contains("L")) // if above tile is top left closed door tile
+            if (openDirection.Contains("L") && closedDoorTiles[4] == aboveTile2) // if above tile is top left closed door tile
             {
                 aboveLayer.SetTile(bounds2, openDoorTiles[4]); // replace closed door tile with open door tile
                 aboveLayer.SetTile(new Vector3Int(bounds2.x, bounds2.y - 1, 0), openDoorTiles[5]); // bottom tile
             }
-            if (closedDoorTiles[6] == aboveTile2 && openDirection.Contains("R"))
+            if (openDirection.Contains("R") && closedDoorTiles[6] == aboveTile2)
             {
                 aboveLayer.SetTile(bounds2, openDoorTiles[6]); // remove top tile
                 aboveLayer.SetTile(new Vector3Int(bounds2.x, bounds2.y - 1, 0), openDoorTiles[7]); // bottom tile
@@ -131,8 +132,8 @@ public class DungeonRoom : MonoBehaviour
     public void UpdateOccupiedGrid(Vector3Int newGridPos, GameObject room)
     {
         room.GetComponent<DungeonRoom>().gridPos = newGridPos; // set new location on grid
-        dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
         dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y] = room.GetComponent<DungeonRoom>().doorDirections; // replace previous data with door direction data e.g. "RLD"
+        dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
         dungeonManager.occupiedGridGameObject[newGridPos.x, newGridPos.y] = room;
         
         if (room.GetComponent<DungeonRoom>().doorDirections.Contains("L"))
@@ -227,17 +228,34 @@ public class DungeonRoom : MonoBehaviour
         return false;
     }
 
-    public void InstantiateRoom(Vector3Int newGridPos, string requiredDirections)
+    public void InstantiateRoom(Vector3Int newGridPos, string initalDirection, string requiredDirections)
     {
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
         if (dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y] == null || dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y].Contains("room"))
         {
             bool validRoom = false;
             int iterationCounter = 0;
-            while (!validRoom && iterationCounter <= 50)
+            while (!validRoom && iterationCounter <= 100)
             {
                 int validCounter = 0; // always set validcounter to 0 on each iteration
-                GameObject potentialRoom = dungeonManager.rooms[Random.Range(0, dungeonManager.rooms.Length)]; // get and store potential room 
+                GameObject potentialRoom = null;
+                if (initalDirection == "L")
+                {
+                    potentialRoom = dungeonManager.roomR[Random.Range(0, dungeonManager.roomR.Count)]; // get and store potential room 
+                }
+                else if (initalDirection == "R")
+                {
+                    potentialRoom = dungeonManager.roomL[Random.Range(0, dungeonManager.roomR.Count)]; // get and store potential room 
+                }
+                else if (initalDirection == "U")
+                {
+                    potentialRoom = dungeonManager.roomD[Random.Range(0, dungeonManager.roomR.Count)]; // get and store potential room 
+                }
+                else if (initalDirection == "D")
+                {
+                    potentialRoom = dungeonManager.roomU[Random.Range(0, dungeonManager.roomR.Count)]; // get and store potential room 
+                }
+                
                 foreach (char letter in potentialRoom.GetComponent<DungeonRoom>().doorDirections) // loops through each letter in doordirection string
                 {
                     if (requiredDirections.Contains(letter.ToString()) && letter.ToString() != "") // checks if given potential rooms direction matches required
@@ -249,7 +267,6 @@ public class DungeonRoom : MonoBehaviour
                 {
                     GameObject room = Instantiate(potentialRoom, new Vector3Int(newGridPos.x*26, newGridPos.y*26, 0), Quaternion.identity); // instantiate room in tilemap grid
                     room.transform.parent = dungeonManager.transform; // set parent
-                    dungeonManager.occupiedGrid[newGridPos.x, newGridPos.y] = room.GetComponent<DungeonRoom>().doorDirections; // replace previous data with door direction data e.g. "RLD"
                     UpdateOccupiedGrid(newGridPos, room);
                     if (room.GetComponent<DungeonRoom>().doorDirections.Length > 1)
                     {
@@ -263,9 +280,9 @@ public class DungeonRoom : MonoBehaviour
             if (!validRoom)
             {
                 Debug.Log("brick spawned");
-                GameObject brick = Instantiate(dungeonManager.bricks[0], new Vector3Int(newGridPos.x*26, newGridPos.y*26, 0), Quaternion.identity);
-                brick.transform.parent = dungeonManager.transform;
-                UpdateOccupiedGrid(newGridPos, brick);
+                GameObject brick = Instantiate(dungeonManager.bricks[0], new Vector3Int(newGridPos.x*26, newGridPos.y*26, 0), Quaternion.identity); // instantiate brick to world
+                brick.transform.parent = dungeonManager.transform; // set parent
+                UpdateOccupiedGrid(newGridPos, brick); // update grid cell to brick
             }
         }
     }
@@ -277,36 +294,32 @@ public class DungeonRoom : MonoBehaviour
         if (doorDirections.Contains("L")) // spawn a room on the left
         {
             requiredDirections = CheckSurroundingRooms(gridPos, "L");
-            
             Vector3Int newGridPos = new Vector3Int(gridPos.x -1, gridPos.y); // create new vector3 pos of where the room should spawn at
-            InstantiateRoom(newGridPos, requiredDirections); // call method which will verify and instantiate rooms
+            InstantiateRoom(newGridPos, "L",requiredDirections); // call method which will verify and instantiate rooms
         }
         if (doorDirections.Contains("R")) // spawn a room on the right
         {
             requiredDirections = CheckSurroundingRooms(gridPos, "R");
-
             Vector3Int newGridPos = new Vector3Int(gridPos.x +1, gridPos.y); // create new vector3 pos of where the room should spawn at
-            InstantiateRoom(newGridPos, requiredDirections); // call method which will verify and instantiate rooms
+            InstantiateRoom(newGridPos, "R",requiredDirections); // call method which will verify and instantiate rooms
         }
         if (doorDirections.Contains("U")) // spawn a room above
         {
             requiredDirections = CheckSurroundingRooms(gridPos, "U");
-
             Vector3Int newGridPos = new Vector3Int(gridPos.x, gridPos.y +1); // create new vector3 pos of where the room should spawn at
-            InstantiateRoom(newGridPos, requiredDirections); // call method which will verify and instantiate rooms
+            InstantiateRoom(newGridPos, "U",requiredDirections); // call method which will verify and instantiate rooms
         }
         if (doorDirections.Contains("D")) // spawn a room below
         {
             requiredDirections = CheckSurroundingRooms(gridPos, "D");
-
             Vector3Int newGridPos = new Vector3Int(gridPos.x, gridPos.y -1); // create new vector3 pos of where the room should spawn at
-            InstantiateRoom(newGridPos, requiredDirections); // call method which will verify and instantiate rooms
+            InstantiateRoom(newGridPos, "D",requiredDirections); // call method which will verify and instantiate rooms
         }
     }
 
     public string CheckSurroundingRooms(Vector3Int currentPos, string checkDirection) // returns what directions are required
     {
-        string validDirections = ""; // contains all direction which is free
+        string requiredDirections = ""; // contains all direction which is free
         
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get updated instance of dungeon manager
         if (checkDirection == "L")
@@ -314,7 +327,7 @@ public class DungeonRoom : MonoBehaviour
             Vector3Int leftPos = new Vector3Int(currentPos.x - 1, currentPos.y); // subtract 1 from x coord to get left position
             if (dungeonManager.occupiedGrid[leftPos.x, leftPos.y] != null && dungeonManager.occupiedGrid[leftPos.x, leftPos.y].Contains("room"))
             {
-                validDirections += dungeonManager.occupiedGrid[leftPos.x, leftPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
+                requiredDirections += dungeonManager.occupiedGrid[leftPos.x, leftPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
             }
         }
         if (checkDirection == "R")
@@ -322,7 +335,7 @@ public class DungeonRoom : MonoBehaviour
             Vector3Int rightPos = new Vector3Int(currentPos.x + 1, currentPos.y); // add 1 to x coord to get right position
             if (dungeonManager.occupiedGrid[rightPos.x, rightPos.y] != null && dungeonManager.occupiedGrid[rightPos.x, rightPos.y].Contains("room"))
             {
-                validDirections += dungeonManager.occupiedGrid[rightPos.x, rightPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
+                requiredDirections += dungeonManager.occupiedGrid[rightPos.x, rightPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
             }
         }
         if (checkDirection == "U")
@@ -330,7 +343,7 @@ public class DungeonRoom : MonoBehaviour
             Vector3Int upPos = new Vector3Int(currentPos.x, currentPos.y + 1); // add 1 to y coord to get up position
             if (dungeonManager.occupiedGrid[upPos.x, upPos.y] != null && dungeonManager.occupiedGrid[upPos.x, upPos.y].Contains("room"))
             {
-                validDirections += dungeonManager.occupiedGrid[upPos.x, upPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
+                requiredDirections += dungeonManager.occupiedGrid[upPos.x, upPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
             }
         }
         if (checkDirection == "D")
@@ -338,29 +351,29 @@ public class DungeonRoom : MonoBehaviour
             Vector3Int downPos = new Vector3Int(currentPos.x, currentPos.y - 1); // subtract 1 from x coord to get down position
             if (dungeonManager.occupiedGrid[downPos.x, downPos.y] != null && dungeonManager.occupiedGrid[downPos.x, downPos.y].Contains("room"))
             {
-                validDirections += dungeonManager.occupiedGrid[downPos.x, downPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
+                requiredDirections += dungeonManager.occupiedGrid[downPos.x, downPos.y].Substring(4); // returns everything past Req e.g. "LD" (left + down)
             }
         }
 
-        if (validDirections == "")
+        if (requiredDirections == "")
         {
             switch (checkDirection) // return oposite of what checkDirection was
             {
                 case "L":
-                    validDirections += "R";
+                    requiredDirections += "R";
                     break;
                 case "R":
-                    validDirections += "L";
+                    requiredDirections += "L";
                     break;
                 case "U":
-                    validDirections += "D";
+                    requiredDirections += "D";
                     break;
                 case "D":
-                    validDirections += "U";
+                    requiredDirections += "U";
                     break;
             }
         }
-        return validDirections;
+        return requiredDirections;
     }
 
     private void RoomCleared()

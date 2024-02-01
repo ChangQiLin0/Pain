@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -15,32 +16,53 @@ public class ObtainDefinitions : MonoBehaviour
 
     public Dictionary<string, float> dropChance = new Dictionary<string, float> // get drop chance for each item 
     {
-        {"Gun0", 100f},
-        {"TestLoot0", 100f}
+        {"Gun0", 0f},
+        {"Starter Pistol", 0f},
+        {"TestLoot0", 0f},
+        {"Desert Eagle", 10f},
+        {"Shotgun", 10f},
+        {"Speed Potion", 20f}
     };
 
     public Dictionary<string, bool> isStackable = new Dictionary<string, bool> // pre defined dictionary of all stackable items
     {
         {"Gun0", false},
+        {"Starter Pistol", false},
         {"TestLoot0", true},
+        {"Desert Eagle", false},
+        {"Shotgun", false},
+        {"Speed Potion", true}
     };
 
     private Dictionary<string, string> baseDesc = new Dictionary<string, string> // stores all basic description/base descriptions for all items that need it
     {
         {"Gun0", "A somewhat fast but inaccurate gun, always good for killing a few enemies while keeping your hands clean"},
-        {"TestLoot0", "This is literally a test item nothing more."}
+        {"Starter Pistol", "Cheap and useless gun better start killing for a new one"},
+        {"TestLoot0", "This is literally a test item nothing more."},
+        {"Desert Eagle", "Desert Eagle description placeholder"},
+        {"Shotgun", "Literally just a shotgun"},
+        {"Speed Potion", "On consumption permanently gain more speed"}
     };
 
     public Dictionary<string, bool> isUseable = new Dictionary<string, bool>
     {
         {"Gun0", false},
+        {"Starter Pistol", false},
         {"TestLoot0", true},
+        {"Desert Eagle", false},
+        {"Shotgun", false},
+        {"Speed Potion", true}
     };
 
     public Dictionary<string, StringAction> lootDescription = new Dictionary<string, StringAction>(); // use key to get method with pre defined parameters as modes
-    public GameObject gun0;
-    public GameObject testLoot0;
+    public GameObject gun0; // store gun0 prefab
+    public GameObject starterPistol; // starter pistol prefab
+    public GameObject testLoot0; // store testloot0 prefab
+    public GameObject desertEagle; // store desertEagle prefab
+    public GameObject shotgun; // store Shotgun prefab
     public GameObject[] enemies; // store all enemies in an array
+
+    public GameObject speedPotion; // store speedpotion prefab
 
     private void Awake()
     {

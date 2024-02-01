@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
@@ -31,16 +32,16 @@ public class GunScript : MonoBehaviour
     private float curReloadTimer; // current cooldown timer for reloading
 
     private bool isReloading; // boolean condition for if gun is reloading
-
     public bool isSelected; // should never be true by default unless its the first gun
+    public bool isShotgun; // whether or not gun should be treated as a shotgun
+    public int lowerBound; // set lower bound used for calcualtions e.g. damage, reload speed and mag size
+    public int upperBound; // set upper bound used for calcualtions e.g. damage, reload speed and mag size
+    
 
 
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        playerAmmo = player.GetComponent<Player>().bonusAmmo; // needs to be called to set initial max ammo
-        totalAmmo = baseAmmo + playerAmmo;
-        curAmmo = totalAmmo;
     }
 
     void FixedUpdate()
@@ -56,6 +57,8 @@ public class GunScript : MonoBehaviour
 
         totalBulletSpread = baseBulletSpread + playerBulletSpread; // calculated total bullet spread
         totalDamage = (baseDamage + playerDamage) * playerDamageMulti; // same but damage
+
+        curAmmo = baseAmmo + player.GetComponent<Player>().bonusAmmo; // set current ammo capacity to player base + gunbase
     }
     private void SpriteLayering()
     {
@@ -76,26 +79,35 @@ public class GunScript : MonoBehaviour
     }
     private void DetectShooting()
     {
-        if (Input.GetMouseButton(0) && (Time.time > fireRateTimer) && !isReloading) // reads mouse input for left lick (0)
+        if (totalBulletSpread > 45)
         {
-            if (totalBulletSpread > 45)
-            {
-                totalBulletSpread = 45; // max bullet spread is 45
-            }
-            else if (totalBulletSpread < 0)
-            {
-                totalBulletSpread = 0; // cannot go below 0
-            }
-            // random number generator
+            totalBulletSpread = 45; // max bullet spread is 45
+        }
+        else if (totalBulletSpread < 0)
+        {
+            totalBulletSpread = 0; // cannot go below 0
+        }
+
+        if (Input.GetMouseButton(0) && (Time.time > fireRateTimer) && !isReloading && !isShotgun) // reads mouse input for left lick (0) and shotgun is false
+        {
             float randomFloat = Random.Range(-totalBulletSpread, totalBulletSpread); // randomise spread in both directions
-            // creates the set rotation as bulletRotation
             Quaternion bulletRotation = Quaternion.Euler(0f, 0f, randomFloat); // creates bullet with random spread
-            // creates a bullet at the position of the barrel with applied rotation
             GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * bulletRotation); // creates bullet object
             bullet.GetComponent<BulletScript>().gunDamage = totalDamage; // fetch component to set value
             
             curAmmo -= 1; // subtract bullet count
             fireRateTimer = Time.time + baseFireRate; // increment time
+        }
+        else if (Input.GetMouseButton(0) && (Time.time > fireRateTimer) && !isReloading && isShotgun) // is shotgun and leftclick is pressed
+        {
+            for (int i = 0; i < curAmmo; i++) // allows number of bullets shot to be scaled with mag size
+            {
+                float randomFloat = Random.Range(-totalBulletSpread, totalBulletSpread); // randomise spread in both directions
+                Quaternion bulletRotation = Quaternion.Euler(0f, 0f, randomFloat); // creates bullet with random spread
+                GameObject bullet = Instantiate(bulletPrefab, barrel.position, barrel.rotation * bulletRotation); // creates bullet object
+                bullet.GetComponent<BulletScript>().gunDamage = totalDamage; // fetch component to set value
+            }
+            curAmmo = 0; // after every shot, ammo is set to 0
         }
     }
 

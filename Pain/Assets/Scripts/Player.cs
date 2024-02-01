@@ -9,19 +9,19 @@ public class Player : MonoBehaviour
     private Animator playerAnimation;
     private bool facingRight = true;
     private Vector2 moveVector; // store player movement input e.g. WASD
-    public float totalMoveSpeed = 5;
-    public float maxHealth = 200;
-    public float curHealth = 200;
-    public float totalCoins = 0;
-    public float coinMultiplier = 1; 
-    public float totalExp = 0; // temp
-    public float nextReqExp = 30; // base level exp req is 30
-    public float expMultiplier = 1; // temp
-    public float playerLevel = 1; // temp
+    public float totalMoveSpeed = 5f;
+    public float maxHealth = 200f;
+    public float curHealth = 200f;
+    public float totalCoins = 0f;
+    public float coinMultiplier = 1f; 
+    public float totalExp = 0f; // temp
+    public float nextReqExp = 24f; // base level exp req is 24 (20 * 1.2^1 = 24)
+    public float expMultiplier = 1f; // temp
+    public float playerLevel = 1f; // temp
     public int skillPoints = 0;
-    public float bonusDamage;
-    public float damageMultiplier = 1; // higher is better default = 1 but can be > 0
-    public float bulletSpreadAngle; // DEGREES
+    public float bonusDamage = 0f;
+    public float damageMultiplier = 1f; // higher is better default = 1 but can be > 0
+    public float bulletSpreadAngle; // in degrees
     public int bonusAmmo; // bonus ammo for player
     public float defence; // higher = better
     public float defenceMultiplier = 1; // lower = better
@@ -102,15 +102,12 @@ public class Player : MonoBehaviour
 
     public void LevelUpCalculation()
     {
-        Debug.Log("total exp" + totalExp);
         if (totalExp >= nextReqExp)
         {
-            Debug.Log(playerLevel + " req: "+ nextReqExp);
             totalExp -= nextReqExp; // keep any extra exp and transfer to next level
             playerLevel += 1; // add one to player level
-            skillPoints += Random.Range(1,4);; // add between 1-3 skill points
-            nextReqExp = 25 * Mathf.Pow(1.2f, playerLevel); // 25 x 1.2^playerLevel
-            Debug.Log(playerLevel + " req: "+ nextReqExp);
+            skillPoints ++; // add 1 skill point to total
+            nextReqExp = 20 * Mathf.Pow(1.2f, playerLevel); // 20 x 1.2^playerLevel
         }
     }
 

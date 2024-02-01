@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
 public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -15,15 +16,24 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     public Transform lootParent = null; // stores original parent of dragged object
     private Image image;
 
-    public string lootType; // e.g. gun, trinket, helmet, chestplate // try create dropdown menu enum
+    public string lootType; // inv equipt names e.g. Gun, Trinket, Helmet, Chestplate // try create dropdown menu enum
     public bool isCursed; // if cursed, player shouldnt be able to move/drop the item
     public bool canBeUsed; // if item can be used while in inventory e.g. health potion 
+    public bool autoCollect; // whether or not an item should be automatically collected, default is false
 
     private void Start()
     {
         image = GetComponent<Image>();
         GameObject player = GameObject.FindGameObjectWithTag("Player"); // get player object
         inventoryUI = ObtainDefinitions.Instance.InventoryUI;
+
+        if (autoCollect)
+        {
+            autoCollect = false;
+            lootToBeAdded = gameObject;
+            PickUp();
+            
+        }
     }
 
     private void Update()
@@ -32,6 +42,11 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // check if e is pressed, is in the physical world and is collectible 
         {   
             PickUp();
+        }
+        if (autoCollect)
+        {
+            PickUp();
+            autoCollect = false;
         }
     }
 
@@ -56,8 +71,9 @@ public class CollectibleLoot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         }
     }
 
-    private void PickUp()
+    public void PickUp()
     {   
+        inventoryUI = ObtainDefinitions.Instance.InventoryUI;
         if (inventoryUI.inventoryCount > 20) // if inventory is full
         {
             Debug.Log(inventoryUI.inventoryCount);

@@ -10,6 +10,7 @@ public class PlayerDetector : MonoBehaviour
     private Transform dungeonManager;
     private Transform playerDetectorContainer;
     private DungeonRoom dungeonRoomScript; 
+    private DungeonManager dungeonManagerScript;
 
     private void Start()
     {
@@ -17,6 +18,7 @@ public class PlayerDetector : MonoBehaviour
         dungeonRoom = transform.parent.parent; // get dungeon room parent object
         dungeonManager = dungeonRoom.parent; // get dungeon room manager object
         dungeonRoomScript = dungeonRoom.GetComponent<DungeonRoom>(); // get rooms dungeon room script
+        dungeonManagerScript = dungeonManager.GetComponent<DungeonManager>(); // add one to total
     }
 
     private void OnCollisionEnter2D(Collision2D collision) 
@@ -27,6 +29,7 @@ public class PlayerDetector : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Player")) // filters out other collisions to only get player
         {   
+            dungeonManagerScript.totalVisitedRooms ++;
             EnemySpawnLocation();
         }
     }
@@ -37,7 +40,7 @@ public class PlayerDetector : MonoBehaviour
         dungeonRoomScript.CloseDoors("LRUD"); // close all doors, to trap player in room
         dungeonRoomScript.closeDoors = true;
         
-        for (int i = 0; i < Random.Range(2, dungeonManager.GetComponent<DungeonManager>().floor*6); i++) // random loop between 2 and (5*current floor)
+        for (int i = 0; i < Random.Range(2, dungeonManagerScript.floor*6); i++) // random loop between 2 and (5*current floor)
         {
             dungeonRoomScript.enemyCount += 1; // increment enemy count by one for each enemy spawned
             Invoke("InstantiateEnemy", 0.5f); // invoke method with time delay
@@ -54,6 +57,15 @@ public class PlayerDetector : MonoBehaviour
         GameObject enemySpawned = Instantiate(ObtainDefinitions.Instance.enemies[0], spawnPos, Quaternion.identity);
         enemySpawned.transform.SetParent(dungeonRoom);
 
+        Enemy enemyComponent = enemySpawned.GetComponent<Enemy>();
+
+        float healthExponent = 1+((dungeonManagerScript.floor/5f) - 0.2f); // calculate exponent based on floors base exponent is 1, increases by 0.2 per floor
+        float damageExponent = 1+((dungeonManagerScript.floor/10f) - 0.1f); // calculate exponent based on floors base exponent is 1, increases by 0.1 per floor
+        enemyComponent.enemyHealth = Mathf.Pow(5 + (4 * dungeonManagerScript.totalVisitedRooms), healthExponent); // rounds down to nearest int
+        enemyComponent.enemyDamage = Mathf.Pow(4 * dungeonManagerScript.totalVisitedRooms, damageExponent); // rounds down to nearest int
+
+
+        // TEMP REMOVE LATER AND REPLACE WITH RANDOM SELECTED ENEMY FROM LIST
         if (Random.Range(0,4) == 0) // 25% chance
         {
             enemySpawned.GetComponent<Enemy>().hasShotgun = true;

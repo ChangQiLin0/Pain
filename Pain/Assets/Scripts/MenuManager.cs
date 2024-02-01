@@ -50,14 +50,16 @@ public class MenuManager : MonoBehaviour
             if (isPaused) // resume game
             {
                 inMenu = false;
-                pauseMenuUI.SetActive(false);
+                pauseMenuUI.SetActive(false); // hide pause menu
+                HUD.SetActive(true); // show HUD
                 Time.timeScale = 1f; // unfreeze game by setting timescale back to 1
                 isPaused = false;
             }
             else if (!isPaused && !inMenu) // pause game
             {
                 inMenu = true;
-                pauseMenuUI.SetActive(true);
+                pauseMenuUI.SetActive(true); // show pause menu
+                HUD.SetActive(false); // hide HUD
                 Time.timeScale = 0f; // freeze time by setting speed time is passing to 0
                 isPaused = true;
             }
