@@ -20,8 +20,10 @@ public class ObtainDefinitions : MonoBehaviour
         {"Starter Pistol", 0f},
         {"TestLoot0", 0f},
         {"Desert Eagle", 10f},
-        {"Shotgun", 10f},
-        {"Speed Potion", 20f}
+        {"Shotgun", 30f},
+        {"Speed Potion", 20f},
+        {"Health Potion", 20f},
+        {"Steriods", 20f}
     };
 
     public Dictionary<string, bool> isStackable = new Dictionary<string, bool> // pre defined dictionary of all stackable items
@@ -31,7 +33,9 @@ public class ObtainDefinitions : MonoBehaviour
         {"TestLoot0", true},
         {"Desert Eagle", false},
         {"Shotgun", false},
-        {"Speed Potion", true}
+        {"Speed Potion", true},
+        {"Health Potion", true},
+        {"Steriods", true}
     };
 
     private Dictionary<string, string> baseDesc = new Dictionary<string, string> // stores all basic description/base descriptions for all items that need it
@@ -41,7 +45,9 @@ public class ObtainDefinitions : MonoBehaviour
         {"TestLoot0", "This is literally a test item nothing more."},
         {"Desert Eagle", "Desert Eagle description placeholder"},
         {"Shotgun", "Literally just a shotgun"},
-        {"Speed Potion", "On consumption permanently gain more speed"}
+        {"Speed Potion", "On consumption permanently gain more speed"},
+        {"Health Potion", "On consumption regain lost health"},
+        {"Steriods", "On consumption permanenty gain more damage"}
     };
 
     public Dictionary<string, bool> isUseable = new Dictionary<string, bool>
@@ -51,7 +57,9 @@ public class ObtainDefinitions : MonoBehaviour
         {"TestLoot0", true},
         {"Desert Eagle", false},
         {"Shotgun", false},
-        {"Speed Potion", true}
+        {"Speed Potion", true},
+        {"Health Potion", true},
+        {"Steriods", true}
     };
 
     public Dictionary<string, StringAction> lootDescription = new Dictionary<string, StringAction>(); // use key to get method with pre defined parameters as modes
@@ -63,6 +71,8 @@ public class ObtainDefinitions : MonoBehaviour
     public GameObject[] enemies; // store all enemies in an array
 
     public GameObject speedPotion; // store speedpotion prefab
+    public GameObject healthPotion; // store speedpotion prefab
+    public GameObject steriods; // store speedpotion prefab
 
     private void Awake()
     {

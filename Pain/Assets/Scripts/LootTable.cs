@@ -69,6 +69,15 @@ public class LootTable : MonoBehaviour
                         possibleLoot.Add(ObtainDefinitions.Instance.speedPotion); // add to loot pool
                         Debug.Log("added speed pot");
                         break;
+                    case "Health Potion":
+                        possibleLoot.Add(ObtainDefinitions.Instance.healthPotion); // add to loot pool
+                        Debug.Log("added health pot");
+                        break;
+                    case "Steriods":
+                        possibleLoot.Add(ObtainDefinitions.Instance.steriods); // add to loot pool
+                        Debug.Log("added steriods");
+                        break;
+                    
                     default: 
                         Debug.Log("Something passed switchcase in LootTable"); 
                         break;

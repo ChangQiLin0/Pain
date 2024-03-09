@@ -165,35 +165,42 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                     player.GetComponent<Player>().totalMoveSpeed = 10f; // set player speed to 10
                 }
             }
-            // make health, base damage, base accuracy?, base bullet quant, defence/shield  
+            else if (transform.GetChild(0).name == "Health Potion")
+            {
+                player.GetComponent<Player>().Heal(50); // heal player by 50
+            }
+            else if (transform.GetChild(0).name == "Steriods")
+            {
+                player.GetComponent<Player>().bonusDamage += 0.5f; // increase player damage by 0.5
+            }
 
-            SubtractStack();
+            SubtractStack(); // subtract 1 from stack as item has now been used
         }
     }
 
     private void SubtractStack() // reduce stack value by 1/remove from inv completely
     {
         if (inventoryUI.stackedLoot.ContainsKey(selectedObject.name))
-            {   
-                if (inventoryUI.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
-                {
-                    inventoryUI.stackedLoot[selectedObject.name] --; // subtract from stack
-                    inventoryUI.inventoryCount --; // minus 1 from inventory count
-                    inventoryUI.stackedLoot.Remove(selectedObject.name);
-                    OnPointerExit(null); // call onpointerexit to hide tooltip
-                    Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
-                }
-                else
-                {
-                    inventoryUI.stackedLoot[selectedObject.name] --; // subtract from stack
-                }
+        {   
+            if (inventoryUI.stackedLoot[selectedObject.name] == 1) // if there is only one in the stack of items
+            {
+                inventoryUI.stackedLoot[selectedObject.name] --; // subtract from stack
+                inventoryUI.inventoryCount --; // minus 1 from inventory count
+                inventoryUI.stackedLoot.Remove(selectedObject.name);
+                OnPointerExit(null); // call onpointerexit to hide tooltip
+                Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
             }
             else
             {
-                OnPointerExit(null); // call onpointerexit to hide tooltip
-                Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
-                inventoryUI.inventoryCount --; // minus 1 from inventory count
+                inventoryUI.stackedLoot[selectedObject.name] --; // subtract from stack
             }
+        }
+        else
+        {
+            OnPointerExit(null); // call onpointerexit to hide tooltip
+            Destroy(transform.GetChild(0).gameObject); // delete gameobject from UI
+            inventoryUI.inventoryCount --; // minus 1 from inventory count
+        }
     }
 
     private void TooltipContent()

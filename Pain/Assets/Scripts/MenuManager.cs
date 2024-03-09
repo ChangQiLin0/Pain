@@ -10,6 +10,7 @@ public class MenuManager : MonoBehaviour
     public GameObject pauseMenuUI; // store menu UI object
     public GameObject HUD; // store hud menu reference
     public GameObject skillTreeUI; // store skill tree reference
+    public GameObject deathMenu; // store death menu ui
     public bool isInInventory; // boolean to check is player has inventory open or not
     public bool isPaused; // boolean to check if the game is paused
     public bool inMenu; // if player is in ANY menu e.g. inv, shop, skilltree etc
@@ -24,8 +25,18 @@ public class MenuManager : MonoBehaviour
     private void Update()
     {
         OpenCloseMenu();
-        manageSkillTree();
+        ManageSkillTree();
+        DeathOpenMenu();
     }
+    private void DeathOpenMenu()
+    {
+        if (Input.GetKeyDown(KeyCode.Minus))
+        {
+            Time.timeScale = 0f; // pause game as player is already dead
+            deathMenu.SetActive(true); // show death menu UI options
+        }
+    }
+
     private void OpenCloseMenu()
     {
         if ((Input.GetKeyDown(KeyCode.Tab) && !isPaused) || (Input.GetKeyDown(KeyCode.Escape) && !isPaused && isInInventory)) // check if player input is equal to the tab key and prevents interference 
@@ -66,7 +77,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void manageSkillTree()
+    public void ManageSkillTree()
     {
        if ((Input.GetKeyDown(KeyCode.P) && !inMenu) || (Input.GetKeyDown(KeyCode.P) && inMenu && inSkillTree)) // if E key is pressed
        {

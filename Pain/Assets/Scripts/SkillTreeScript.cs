@@ -111,7 +111,7 @@ public class SkillTreeScript : MonoBehaviour
         }
     }
 
-    public void Button6(Button clickedButton) // add 100% more exp but 100% less coins
+    public void Button6(Button clickedButton) // add 100% more exp
 
     {
         if (player.skillPoints >= 5) // costs 5 sp
@@ -122,12 +122,11 @@ public class SkillTreeScript : MonoBehaviour
             skills[7].GetComponent<Image>().color = new Color(1, 0, 0); // color set to red, locked/unable to be bought
 
             player.expMultiplier += 1.0f; // add 100% to exp multi
-            player.coinMultiplier -= 1.0f; // sub 100% to coin multi
             player.skillPoints -= 5; // subtract 5 skill points from player
         }
     }
 
-    public void Button7(Button clickedButton) // add 100% more coins but 100% less exp
+    public void Button7(Button clickedButton) // add 100% more coins
     {
         if (player.skillPoints >= 5) // costs 5 sp
         {
@@ -136,7 +135,6 @@ public class SkillTreeScript : MonoBehaviour
             skills[6].interactable = false; // set other one to false
             skills[6].GetComponent<Image>().color = new Color(1, 0, 0); // color set to red, locked/unable to be bought
 
-            player.expMultiplier -= 1.0f; // sub 100% to exp multi
             player.coinMultiplier += 1.0f; // add 100% to coin multi
             player.skillPoints -= 5; // subtract 5 skill points from player
         }

@@ -84,6 +84,8 @@ MonoBehaviour:
   - Exp
   - Coin
   - Speed Potion
+  - Health Potion
+  - Steriods
 --- !u!212 &4794944907271097332
 SpriteRenderer:
   m_ObjectHideFlags: 0
