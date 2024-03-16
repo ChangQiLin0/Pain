@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
@@ -18,11 +14,15 @@ public class MenuManager : MonoBehaviour
     public bool isPaused; // boolean to check if the game is paused
     public bool inMenu; // if player is in ANY menu e.g. inv, shop, skilltree etc
     public bool inSkillTree; // check if player is in skilltree
+    public bool inStartMenu = true;
+    public bool inTutorial = false;
 
     private void Awake()
     {
         inventoryMenuUI.SetActive(true); // initialise the menu while game is loading
         inventoryMenuUI.SetActive(false); // deactivate to make sure the game doesnt start with the inventory present
+
+        OpenStartMenu(); // pause game at start (start menu is active)
     }
     private void Update()
     {
@@ -34,17 +34,31 @@ public class MenuManager : MonoBehaviour
     public void OpenTutorialMenu()
     {
         tutorialMenu.SetActive(true);
+        inTutorial = true;
     }
 
     public void CloseTutorialMenu()
     {
         tutorialMenu.SetActive(false);
+        inTutorial = false;
     }
 
     public void CloseStartMenu()
     {
         Time.timeScale = 1f;
         startMenu.SetActive(false);
+        isPaused = false;
+        inMenu = false;
+        inStartMenu = false;
+    }
+
+    public void OpenStartMenu()
+    {
+        Time.timeScale = 0f;
+        startMenu.SetActive(true);
+        isPaused = true;
+        inMenu = true;
+        inStartMenu = true;
     }
     private void OpenDeathMenu()
     {
@@ -55,9 +69,18 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void UnpauseGame()
+    {
+        inMenu = false;
+        pauseMenuUI.SetActive(false); // hide pause menu
+        HUD.SetActive(true); // show HUD
+        Time.timeScale = 1f; // unfreeze game by setting timescale back to 1
+        isPaused = false;
+    }
+
     private void OpenCloseMenu()
     {
-        if ((Input.GetKeyDown(KeyCode.Tab) && !isPaused) || (Input.GetKeyDown(KeyCode.Escape) && !isPaused && isInInventory)) // check if player input is equal to the tab key and prevents interference 
+        if (((Input.GetKeyDown(KeyCode.Tab) && !isPaused) || (Input.GetKeyDown(KeyCode.Escape) && !isPaused && isInInventory)) && !inTutorial) // check if player input is equal to the tab key and prevents interference 
         {
             if (isInInventory) // close inventory
             {
@@ -74,15 +97,11 @@ public class MenuManager : MonoBehaviour
                 isInInventory = true; // change to show that inventory has been opened 
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Escape) && !isInInventory) // check if input is equal to the escape key and prevents interference 
+        else if (Input.GetKeyDown(KeyCode.Escape) && !isInInventory && !inStartMenu && !inTutorial) // check if input is equal to the escape key and prevents interference 
         {
             if (isPaused) // resume game
             {
-                inMenu = false;
-                pauseMenuUI.SetActive(false); // hide pause menu
-                HUD.SetActive(true); // show HUD
-                Time.timeScale = 1f; // unfreeze game by setting timescale back to 1
-                isPaused = false;
+                UnpauseGame();
             }
             else if (!isPaused && !inMenu) // pause game
             {
@@ -97,7 +116,7 @@ public class MenuManager : MonoBehaviour
 
     public void ManageSkillTree()
     {
-       if ((Input.GetKeyDown(KeyCode.T) && !inMenu) || (Input.GetKeyDown(KeyCode.T) && inMenu && inSkillTree)) // if E key is pressed
+       if (((Input.GetKeyDown(KeyCode.T) && !inMenu) || (Input.GetKeyDown(KeyCode.T) && inMenu && inSkillTree)) && !inTutorial) // if E key is pressed
        {
         Debug.Log("skillTree");
             if (inSkillTree) // close skill tree

@@ -1,15 +1,8 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using TMPro;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEngine.UIElements;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -32,6 +25,12 @@ public class DungeonManager : MonoBehaviour
     public GameObject[,] occupiedGridGameObject = new GameObject[dungeonSize, dungeonSize]; // store gameobject of what room is there 
     // if contains "Req" + "L/R/U/D" it means its requires that
 
+
+    private float keyDownRequiredTime = 3f;
+    private float endTime = 0f;
+    private float pressedTime = 0f;
+    private bool ready = false;
+
     public void Start()
     {
         SortRoomPrefabs();
@@ -44,6 +43,31 @@ public class DungeonManager : MonoBehaviour
             tilemapSave.SetActive(true);
             Destroy(transform.gameObject); // destory self
         }
+    }
+    public void FixedUpdate()
+    { 
+        PressedP();
+    }
+
+
+    private void PressedP()
+    {
+        if (Input.GetKeyDown(KeyCode.P) && ready == false) 
+        {
+            pressedTime = Time.time; // get start time
+            endTime = pressedTime + keyDownRequiredTime; // set endtime to x seconds after current time
+            ready = true; 
+        }
+        if (Input.GetKeyUp(KeyCode.P))
+        {
+            ready = false; // reset timer as player has released p
+        }
+        if (Time.time >= endTime && ready == true)
+        {
+            ready = false; // reset function for next time
+
+        }
+
     }
 
     private void SortRoomPrefabs() // organise all room prefabs

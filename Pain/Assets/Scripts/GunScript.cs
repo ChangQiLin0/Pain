@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Collections;
-using UnityEditor.Callbacks;
 using UnityEngine;
 
 public class GunScript : MonoBehaviour
