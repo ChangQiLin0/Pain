@@ -11,6 +11,9 @@ public class MenuManager : MonoBehaviour
     public GameObject HUD; // store hud menu reference
     public GameObject skillTreeUI; // store skill tree reference
     public GameObject deathMenu; // store death menu ui
+    public GameObject startMenu; // store start menu ui
+    public GameObject tutorialMenu; // store tutorial ui
+    public GameObject player;
     public bool isInInventory; // boolean to check is player has inventory open or not
     public bool isPaused; // boolean to check if the game is paused
     public bool inMenu; // if player is in ANY menu e.g. inv, shop, skilltree etc
@@ -18,7 +21,6 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("AWAKE");
         inventoryMenuUI.SetActive(true); // initialise the menu while game is loading
         inventoryMenuUI.SetActive(false); // deactivate to make sure the game doesnt start with the inventory present
     }
@@ -26,11 +28,27 @@ public class MenuManager : MonoBehaviour
     {
         OpenCloseMenu();
         ManageSkillTree();
-        DeathOpenMenu();
+        OpenDeathMenu();
     }
-    private void DeathOpenMenu()
+
+    public void OpenTutorialMenu()
     {
-        if (Input.GetKeyDown(KeyCode.Minus))
+        tutorialMenu.SetActive(true);
+    }
+
+    public void CloseTutorialMenu()
+    {
+        tutorialMenu.SetActive(false);
+    }
+
+    public void CloseStartMenu()
+    {
+        Time.timeScale = 1f;
+        startMenu.SetActive(false);
+    }
+    private void OpenDeathMenu()
+    {
+        if (player.GetComponent<Player>().curHealth <= 0) // if player health is less than or equal to 0
         {
             Time.timeScale = 0f; // pause game as player is already dead
             deathMenu.SetActive(true); // show death menu UI options
@@ -79,7 +97,7 @@ public class MenuManager : MonoBehaviour
 
     public void ManageSkillTree()
     {
-       if ((Input.GetKeyDown(KeyCode.P) && !inMenu) || (Input.GetKeyDown(KeyCode.P) && inMenu && inSkillTree)) // if E key is pressed
+       if ((Input.GetKeyDown(KeyCode.T) && !inMenu) || (Input.GetKeyDown(KeyCode.T) && inMenu && inSkillTree)) // if E key is pressed
        {
         Debug.Log("skillTree");
             if (inSkillTree) // close skill tree

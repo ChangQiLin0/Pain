@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class DeathMenuScript : MonoBehaviour
+public class MainMenuScript : MonoBehaviour
 {
     public GameObject deathMenu;
     public void RestartGame()
@@ -16,5 +16,10 @@ public class DeathMenuScript : MonoBehaviour
     {
         Application.Quit();
         Debug.Log("QUIT");
+    }
+
+    public void StartGame()
+    {
+        
     }
 }
