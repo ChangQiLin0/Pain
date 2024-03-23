@@ -56,7 +56,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
         Transform originalParent = lootComponent.lootParent; // store original parent as temp variable for later use 
         Transform itemInSlot = transform.GetChild(0); // get child object
         
-        if (droppedObject != null && transform.name == "ItemSlot") // if dropped place is item  slot or matches loot slot
+        if (droppedObject != null && transform.name == "ItemSlot") // if dropped place is item slot or matches loot slot
         {
             if (transform.childCount == 1) // if it has one item it means its empty
             { 
@@ -64,10 +64,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                 {
                     inventoryUI.inventoryCount --; // subtract 1 from inv counter
                 }
-                if (droppedObject.transform.parent.name != "ItemSlot" && lootComponent.lootType == "Gun") // if dropped weapon is a gun
+                if (originalParent.name == "Gun" && lootComponent.lootType == "Gun") // if dropped weapon is a gun
                 {
-                    if (player.transform.GetChild(0).childCount != 0) // if there already is a weapona active
+                    Debug.Log(originalParent.name);
+                    if (player.transform.GetChild(0).childCount != 0) // if there already is a weapon active
                     {
+                        Debug.Log("huh2");
                         Destroy(player.transform.GetChild(0).GetChild(0).gameObject); // destory exisiting weapon
                     }
                 }
@@ -113,7 +115,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
     
     public void EquiptWeapon(GameObject droppedObject)
     {
-        if (player.transform.GetChild(0).childCount != 0) // if there already is a weapona active
+        if (player.transform.GetChild(0).childCount != 0) // if there already is a weapon active
         {
             Destroy(player.transform.GetChild(0).GetChild(0).gameObject); // destory exisiting weapon
         }

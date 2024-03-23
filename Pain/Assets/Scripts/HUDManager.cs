@@ -12,6 +12,7 @@ public class HUDManager : MonoBehaviour
     public TextMeshProUGUI coinCount;
     public TextMeshProUGUI skillPointCount;
     public TextMeshProUGUI playerLevel;
+    public Transform floorIndicator;
 
     private void Start()
     {
@@ -21,6 +22,7 @@ public class HUDManager : MonoBehaviour
     private void Update() 
     {
         HUDComponents();
+        UpdatePColour();
     }
 
     private void HUDComponents()
@@ -36,4 +38,18 @@ public class HUDManager : MonoBehaviour
         skillPointCount.text = player.skillPoints.ToString(); // set player skillpoint count
         
     }
+
+    private void UpdatePColour() // update p colors when avaliable
+    {
+        if (player.currentDungeonFloor != null)
+        {
+            DungeonManager dungeonManager = player.currentDungeonFloor.GetComponent<DungeonManager>();
+            if (dungeonManager.floor >= 5)
+            {
+                floorIndicator.GetChild(0); // child 0 = cirle object
+                floorIndicator.GetChild(1); // child 1 = text
+            }
+        }
+    }
 }
+

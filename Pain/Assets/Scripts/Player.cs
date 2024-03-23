@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
     public int leechChance = 0; // chance to leech health from enemy 0-100
     public int leechPercent = 0; // percentage of health leeched 0-100
     public float regenRate = 0f; // nature regeneration of hp for player
+    public GameObject currentDungeonFloor;
      
     private void Start()
     {

@@ -1,10 +1,12 @@
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SkillTreeScript : MonoBehaviour
 {
     private Player player;
+    public TextMeshProUGUI skillPointCountText;
     public Button[] skills;
 
     private void Start()
@@ -21,10 +23,14 @@ public class SkillTreeScript : MonoBehaviour
             }
         }
     }
+    private void Update()
+    {
+        skillPointCountText.text = player.skillPoints.ToString();
+    }
 
     public void Button0(Button clickedButton) // Leech1
     {
-        if (player.skillPoints >= 3) // this skill costs 2 skill points
+        if (player.skillPoints >= 3) // this skill costs 3 skill points
         {
             clickedButton.interactable = false; // set to non interactable
             clickedButton.GetComponent<Image>().color = new Color(0, 1, 0); // color set to green, bought/activated
@@ -52,7 +58,7 @@ public class SkillTreeScript : MonoBehaviour
     }
     public void Button2(Button clickedButton) // Regen1
     {
-        if (player.skillPoints >= 2) // this skill costs 2 skill points
+        if (player.skillPoints >= 3) // this skill costs 2 skill points
         {
             clickedButton.interactable = false; // set to non interactable
             clickedButton.GetComponent<Image>().color = new Color(0, 1, 0); // color set to green, bought/activated
@@ -62,7 +68,7 @@ public class SkillTreeScript : MonoBehaviour
             skills[1].GetComponent<Image>().color = new Color(1, 0, 0); // color set to red, locked/unable to be bought
 
             player.regenRate = 0.2f; // regen 1 hp per 5 second
-            player.skillPoints -= 2; // subtract 2 skill points from player
+            player.skillPoints -= 3; // subtract 2 skill points from player
         }
     }
     public void Button3(Button clickedButton) // Regen2
@@ -84,7 +90,7 @@ public class SkillTreeScript : MonoBehaviour
 
     public void Button4(Button clickedButton) // extra coins
     {
-        if (player.skillPoints >= 1) // costs 1 sp
+        if (player.skillPoints >= 2) // costs 1 sp
         {
             clickedButton.interactable = false; // set to non interactable
             clickedButton.GetComponent<Image>().color = new Color(0, 1, 0); // color set to green, bought/activated
@@ -97,7 +103,7 @@ public class SkillTreeScript : MonoBehaviour
 
     public void Button5(Button clickedButton) // extra xp
     {
-        if (player.skillPoints >= 1) // costs 1 sp
+        if (player.skillPoints >= 2) // costs 1 sp
         {
             clickedButton.interactable = false; // set to non interactable
             clickedButton.GetComponent<Image>().color = new Color(0, 1, 0); // color set to green, bought/activated
@@ -136,10 +142,4 @@ public class SkillTreeScript : MonoBehaviour
             player.skillPoints -= 5; // subtract 5 skill points from player
         }
     }
-
-
-
-
-
-
 }

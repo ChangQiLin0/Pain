@@ -122,6 +122,7 @@ public class MenuManager : MonoBehaviour
             if (inSkillTree) // close skill tree
             {
                 skillTreeUI.SetActive(false); // set UI element to inactive
+                HUD.SetActive(true); // activate HUD
                 inSkillTree = false;
                 inMenu = false;
                 Time.timeScale = 1f; // resume time
@@ -129,6 +130,7 @@ public class MenuManager : MonoBehaviour
             else if (!inSkillTree) // open skill tree
             {
                 skillTreeUI.SetActive(true); // set UI element to active
+                HUD.SetActive(false); // hide HUD
                 inSkillTree = true;
                 inMenu = true;
                 Time.timeScale = 0f; // pause time

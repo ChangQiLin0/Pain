@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Unity.Mathematics;
@@ -17,7 +18,7 @@ public class DungeonManager : MonoBehaviour
     public List<GameObject> roomR = new List<GameObject>(); // store all room prefabs with Right facing Door
     public GameObject[] bricks; // place holder room for errors/unintended results
 
-    public int floor = 1; // which floor the player is on, starts at 1
+    public int floor = 0; // which floor the player is on, starts at 0
     public int totalVisitedRooms = 0; // total number of rooms player has gone to
     private static int dungeonSize = 9; // static variable, always the same
 
@@ -30,21 +31,15 @@ public class DungeonManager : MonoBehaviour
     private float endTime = 0f;
     private float pressedTime = 0f;
     private bool ready = false;
+    private GameObject player;
 
     public void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player"); // get player object
         SortRoomPrefabs();
-        tilemapSave = Instantiate(tilemap.gameObject);
-        tilemapSave.SetActive(false);
-
-        InstantiateDungeon(); // call instantiateDungeon method
-        if (transform.childCount < 30)
-        {
-            tilemapSave.SetActive(true);
-            Destroy(transform.gameObject); // destory self
-        }
+        GenerateFloor(false);
     }
-    public void FixedUpdate()
+    public void Update()
     { 
         PressedP();
     }
@@ -52,22 +47,50 @@ public class DungeonManager : MonoBehaviour
 
     private void PressedP()
     {
-        if (Input.GetKeyDown(KeyCode.P) && ready == false) 
+        if (totalVisitedRooms >= 5)
         {
-            pressedTime = Time.time; // get start time
-            endTime = pressedTime + keyDownRequiredTime; // set endtime to x seconds after current time
-            ready = true; 
+            if (Input.GetKeyDown(KeyCode.P) && ready == false) 
+            {
+                pressedTime = Time.time; // get start time
+                endTime = pressedTime + keyDownRequiredTime; // set endtime to x seconds after current time
+                ready = true;
+                Debug.Log("PRESSEDDDDDDD");
+            }
+            if (Input.GetKeyUp(KeyCode.P))
+            {
+                ready = false; // reset timer as player has released p
+            }
+            if (Time.time >= endTime && ready == true)
+            {
+                Debug.Log("HELDDDDDD");
+                ready = false; // reset function for next time
+                GenerateFloor(true);
+            }
         }
-        if (Input.GetKeyUp(KeyCode.P))
-        {
-            ready = false; // reset timer as player has released p
-        }
-        if (Time.time >= endTime && ready == true)
-        {
-            ready = false; // reset function for next time
+    }
 
-        }
+    private void GenerateFloor(bool generateNew) // generateNew = true, when moving floors
+    {
+        tilemapSave = Instantiate(tilemapSave.gameObject);
+        tilemapSave.SetActive(false);
 
+        InstantiateDungeon(); // call instantiateDungeon method
+        if (transform.childCount < 30 || generateNew)
+        {
+            if (generateNew)
+            {
+                generateNew = false;
+                Debug.Log("new generated");
+            }
+            tilemapSave.SetActive(true);
+            Destroy(transform.gameObject); // destory self
+        }
+        else
+        {   
+            floor ++; // add one to floor counter
+            player.GetComponent<Player>().currentDungeonFloor = gameObject; // set current floor to player var
+            tilemapSave.GetComponent<DungeonManager>().floor ++;
+        }
     }
 
     private void SortRoomPrefabs() // organise all room prefabs
@@ -106,15 +129,15 @@ public class DungeonManager : MonoBehaviour
             occupiedGrid[dungeonSize-1, i] = "border"; // right vertical
         }
 
-        GameObject room = Instantiate(roomL[0], new Vector2((dungeonSize+1)/2*26, (dungeonSize+1)/2*26), quaternion.identity); // create spawn at centre
-        occupiedGrid[(dungeonSize+1)/2,(dungeonSize+1)/2] = "L"; // indicate new spawned room has doors facing in all directions
-        occupiedGrid[((dungeonSize+1)/2)-1,(dungeonSize+1)/2] = "roomR";
+        GameObject room = Instantiate(roomL[0], new Vector2((dungeonSize-1)/2*26, (dungeonSize-1)/2*26), quaternion.identity); // create spawn at centre
+        occupiedGrid[(dungeonSize-1)/2,(dungeonSize-1)/2] = "L"; // indicate new spawned room has doors facing in all directions
+        occupiedGrid[((dungeonSize-1)/2)-1,(dungeonSize-1)/2] = "roomR";
 
         room.GetComponent<DungeonRoom>().spawnedEnemies = true;
-        occupiedGridGameObject[(dungeonSize+1)/2, (dungeonSize+1)/2] = transform.gameObject;
+        occupiedGridGameObject[(dungeonSize-1)/2, (dungeonSize-1)/2] = transform.gameObject;
 
         room.transform.SetParent(tilemap.transform);
-        room.GetComponent<DungeonRoom>().gridPos = new Vector3Int((dungeonSize+1)/2, (dungeonSize+1)/2); // set location on grid
+        room.GetComponent<DungeonRoom>().gridPos = new Vector3Int((dungeonSize-1)/2, (dungeonSize-1)/2); // set location on grid
         room.GetComponent<DungeonRoom>().CreateNextRoom(); // call create room method 
     }
 }
