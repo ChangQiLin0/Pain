@@ -7,6 +7,7 @@ public class PlayerDetector : MonoBehaviour
     private Transform playerDetectorContainer;
     private DungeonRoom dungeonRoomScript; 
     private DungeonManager dungeonManagerScript;
+    private Player player;
 
     private void Start()
     {
@@ -15,6 +16,7 @@ public class PlayerDetector : MonoBehaviour
         dungeonManager = dungeonRoom.parent; // get dungeon room manager object
         dungeonRoomScript = dungeonRoom.GetComponent<DungeonRoom>(); // get rooms dungeon room script
         dungeonManagerScript = dungeonManager.GetComponent<DungeonManager>(); // add one to total
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>(); // define player object
     }
 
     private void OnCollisionEnter2D(Collision2D collision) 
@@ -42,6 +44,7 @@ public class PlayerDetector : MonoBehaviour
             Invoke("InstantiateEnemy", 0.5f); // invoke method with time delay
         }
         dungeonRoomScript.spawnedEnemies = true; // place last to prevent dungeon room triggering as count starts at 0
+        player.inActiveRoom = true;
     }
 
     private void InstantiateEnemy()

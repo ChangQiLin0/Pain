@@ -12,10 +12,12 @@ public class DungeonRoom : MonoBehaviour
     public bool spawnedEnemies = false; // if room is passive, set true by default in inspector
     public int enemyCount = 0; // number of enemies remaining 
     public bool closeDoors = false;
+    private Player player;
 
 
     private void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>(); // define player object
         dungeonManager = transform.parent.GetComponent<DungeonManager>(); // get dungeonmanager script from parent
     }
 
@@ -409,6 +411,7 @@ public class DungeonRoom : MonoBehaviour
                 }
             }
             enemyCount ++;
+            player.inActiveRoom = false;
         }
     }
 }

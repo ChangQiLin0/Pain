@@ -65,13 +65,14 @@ public class DungeonManager : MonoBehaviour
                 Debug.Log("HELDDDDDD");
                 ready = false; // reset function for next time
                 GenerateFloor(true);
+                player.transform.position = new Vector2(117,117);
             }
         }
     }
 
     private void GenerateFloor(bool generateNew) // generateNew = true, when moving floors
     {
-        tilemapSave = Instantiate(tilemapSave.gameObject);
+        tilemapSave = Instantiate(tilemapSave.gameObject); // load tilemapprefab
         tilemapSave.SetActive(false);
 
         InstantiateDungeon(); // call instantiateDungeon method

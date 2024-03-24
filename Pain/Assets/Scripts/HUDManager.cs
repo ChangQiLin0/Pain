@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class HUDManager : MonoBehaviour
@@ -44,10 +45,22 @@ public class HUDManager : MonoBehaviour
         if (player.currentDungeonFloor != null)
         {
             DungeonManager dungeonManager = player.currentDungeonFloor.GetComponent<DungeonManager>();
-            if (dungeonManager.floor >= 5)
+            Image circleUI = floorIndicator.GetChild(0).GetComponent<Image>();
+            TextMeshProUGUI TextUI = floorIndicator.GetChild(1).GetComponent<TextMeshProUGUI>();    
+            if (dungeonManager.totalVisitedRooms < 5) // turn red
             {
-                floorIndicator.GetChild(0); // child 0 = cirle object
-                floorIndicator.GetChild(1); // child 1 = text
+                circleUI.color = new Color(1f, 0.4f, 0.4f, 0.4f);
+                TextUI.color = new Color(1f, 0.4f, 0.4f, 0.4f);
+            }
+            if (dungeonManager.totalVisitedRooms >= 5 && !player.inActiveRoom) // turn green if TVR >=5 and not in active room
+            {
+                circleUI.color = new Color(0.4f, 1f, 0.4f, 0.4f);
+                TextUI.color = new Color(0.4f, 1f, 0.4f, 0.4f);
+            }
+            if (dungeonManager.totalVisitedRooms >= 5 && player.inActiveRoom) // turn grey if TVR >=5 and is in active room
+            {
+                circleUI.color = new Color(0.64f, 0.64f, 0.64f, 0.4f);
+                TextUI.color = new Color(0.64f, 0.64f, 0.64f, 0.4f);
             }
         }
     }

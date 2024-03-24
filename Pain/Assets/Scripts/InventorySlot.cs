@@ -69,7 +69,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler, IPointerEnterHandler, 
                     Debug.Log(originalParent.name);
                     if (player.transform.GetChild(0).childCount != 0) // if there already is a weapon active
                     {
-                        Debug.Log("huh2");
                         Destroy(player.transform.GetChild(0).GetChild(0).gameObject); // destory exisiting weapon
                     }
                 }
