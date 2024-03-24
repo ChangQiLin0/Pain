@@ -47,7 +47,7 @@ public class DungeonManager : MonoBehaviour
 
     private void PressedP()
     {
-        if (totalVisitedRooms >= 5)
+        if (totalVisitedRooms >= 5 && !player.GetComponent<Player>().inActiveRoom) // room count >= 5 and not in active room
         {
             if (Input.GetKeyDown(KeyCode.P) && ready == false) 
             {
